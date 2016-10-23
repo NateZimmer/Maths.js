@@ -1,12 +1,12 @@
 ## Maths.js
-A math library for javascript with an emphasis on arbitrary size matrix opperations. For security reasons, this library does not use eval operator. 
+A math library for javascript with an emphasis on arbitrary size matrix opperations. For security reasons, this library does not use eval operator. This library may not be fully speed optimized but is designed for usability.  
 
 
 ## Matrix Usage
 
 **Matrix Creation:** 
 ```js
-var A = new Matrixs([[1,2,3],[4,5,6],[7,8,5]);		//creates a 3x3 matrix 
+var A = new Matrixs([[1,2,3],[4,5,6],[7,8,5]); //creates a 3x3 matrix 
 A.print();		//prints matrix 
 //Results 
 //1.000		2.000		3.000
@@ -18,7 +18,8 @@ A.print();		//prints matrix
 **Matrix Addition:**
 One can add scalars or other matricies. Commands can be chained. 
 ```js
-A.add(1).add([[1,2,3],[0,0,0],[0,0,0]]).print(); // Adds scalar of 1 to matrix, then adds a 3x3 matrix, then prints result.
+var A = new Matrixs([[1,2,3],[4,5,6],[7,8,5]); //creates a 3x3 matrix 
+A.add(1).add([[1,2,3],[0,0,0],[0,0,0]]).print(); // adds scalar of 1 to matrix, then adds a 3x3 matrix, then prints result.
 //Results
 //3.000		5.000		7.000
 //5.000		6.000		7.000
@@ -26,10 +27,36 @@ A.add(1).add([[1,2,3],[0,0,0],[0,0,0]]).print(); // Adds scalar of 1 to matrix, 
 ```
 
 **Matrix Inversion:**
+Maths can invert non singular matricies
 ```js
-A.invert().print(); //Prints after inverison 
+var A = new Matrixs([[1,2,3],[4,5,6],[7,8,5]); //creates a 3x3 matrix 
+A.add(1).add([[1,2,3],[0,0,0],[0,0,0]]).print(); // adds scalar of 1 to matrix, then adds a 3x3 matrix, then prints result.
+A.invert().print(); //Prints after inverison. Print is set to 3 decimals 
 //Results: 
 //-0.964		1.179		-0.250
-//0.929		-1.357		0.500
+//0.929			-1.357		0.500
 //-0.107		0.464		-0.250
 ```
+
+**Matrix Multiplicaiton:**
+A matrix can be multiplied by a scalar, multiplied elemenet wise, and in a tradditional matrix fasion
+
+```js
+var A = new Matrixs([[1,2],[3,4],[5,6]); // 3x2 Matrix 
+A.multiply(2).print();
+//Results
+//2.000		4.000
+//6.000		8.000
+//10.000		12.000
+
+var B = new Matrixs([[1,2,3],[4,5,6]]); // 3x2 Matrix 
+A.multiply(B).print(); //Multiplies a 3x2 by a 2x3 to create a 3x3   
+//Results
+//18.000		24.000		30.000
+//38.000		52.000		66.000
+//58.000		80.000		102.000
+
+
+```
+
+
