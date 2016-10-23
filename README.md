@@ -67,10 +67,10 @@ Matrixs.multiply(A,B).add(1).print()
 //Results 
 //10.000		13.000		16.000
 //20.000		27.000		34.000
-//30.000		41.000		52.000"
+//30.000		41.000		52.000
 ```
 
-**Misc useful matrix commands :**
+**Misc Useful Matrix Commands :**
 Here are some useful commands
 ```js
 var A = new Matrixs([[1,2,3],[4,5,6],[7,8,5]]); //creates a 3x3 matrix 
@@ -83,6 +83,8 @@ A.transpose().print();
 //Results
 //1.000		2.000		3.000
 //4.000		5.000		6.000
-//7.000		8.000		5.000"
-```
+//7.000		8.000		5.000
 
+```
+**License: MIT :**
+https://opensource.org/licenses/MIT
