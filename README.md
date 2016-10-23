@@ -26,8 +26,10 @@ A.add(1).add([[1,2,3],[0,0,0],[0,0,0]]).print(); // Adds scalar of 1 to matrix, 
 ```
 
 **Matrix Inversion:**
+```js
 A.invert().print(); //Prints after inverison 
 //Results: 
 //-0.964		1.179		-0.250
 //0.929		-1.357		0.500
 //-0.107		0.464		-0.250
+```
