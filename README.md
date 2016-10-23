@@ -29,7 +29,7 @@ A.add(1).add([[1,2,3],[0,0,0],[0,0,0]]).print(); // adds scalar of 1 to matrix, 
 **Matrix Inversion:**
 Maths can invert non singular matricies
 ```js
-var A = new Matrixs([[1,2,3],[4,5,6],[7,8,5]); //creates a 3x3 matrix 
+var A = new Matrixs([[1,2,3],[4,5,6],[7,8,5]]); //creates a 3x3 matrix 
 A.add(1).add([[1,2,3],[0,0,0],[0,0,0]]).print(); // adds scalar of 1 to matrix, then adds a 3x3 matrix, then prints result.
 A.invert().print(); //Prints after inverison. Print is set to 3 decimals 
 //Results: 
@@ -42,12 +42,12 @@ A.invert().print(); //Prints after inverison. Print is set to 3 decimals
 A matrix can be multiplied by a scalar, multiplied elemenet wise, and in a tradditional matrix fasion
 
 ```js
-var A = new Matrixs([[1,2],[3,4],[5,6]); // 3x2 Matrix 
+var A = new Matrixs([[1,2],[3,4],[5,6]]); // 3x2 Matrix 
 A.multiply(2).print();
 //Results
 //2.000		4.000
 //6.000		8.000
-//10.000		12.000
+//10.000	12.000
 
 var B = new Matrixs([[1,2,3],[4,5,6]]); // 3x2 Matrix 
 A.multiply(B).print(); //Multiplies a 3x2 by a 2x3 to create a 3x3   
@@ -55,8 +55,20 @@ A.multiply(B).print(); //Multiplies a 3x2 by a 2x3 to create a 3x3
 //18.000		24.000		30.000
 //38.000		52.000		66.000
 //58.000		80.000		102.000
-
-
 ```
+
+**Static Matrix Usage:**
+Matrix library can be used in a static sense to preserve copies of the variables 
+
+```js
+var A = new Matrixs([[1,2],[3,4],[5,6]]); // 3x2 Matrix 
+var B = new Matrixs([[1,2,3],[4,5,6]]); // 3x2 Matrix 
+Matrixs.multiply(A,B).add(1).print()
+//Results 
+//10.000		13.000		16.000
+//20.000		27.000		34.000
+//30.000		41.000		52.000"
+```
+
 
 
