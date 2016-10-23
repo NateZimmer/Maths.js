@@ -16,12 +16,18 @@ A.print();		//prints matrix
 ```
 
 **Matrix Addition:**
-One can add scalars or other matricies. 
+One can add scalars or other matricies. Commands can be chained. 
 ```js
-A.add(1).add([[1,2,3],[0,0,0],[0,0,0]]).print(); // Adds scalar of 1 to matrix, then a 3x3 matrix, then prints result
+A.add(1).add([[1,2,3],[0,0,0],[0,0,0]]).print(); // Adds scalar of 1 to matrix, then adds a 3x3 matrix, then prints result.
 //Results
-
-
-
+//3.000		5.000		7.000
+//5.000		6.000		7.000
+//8.000		9.000		6.000
 ```
 
+**Matrix Inversion:**
+A.invert().print(); //Prints after inverison 
+//Results: 
+//-0.964		1.179		-0.250
+//0.929		-1.357		0.500
+//-0.107		0.464		-0.250
