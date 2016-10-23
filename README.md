@@ -27,7 +27,7 @@ A.add(1).add([[1,2,3],[0,0,0],[0,0,0]]).print(); // adds scalar of 1 to matrix, 
 ```
 
 **Matrix Inversion:**
-Maths can invert non singular matricies
+Maths.js can invert arbitrary sized(e.g. 100x100) non singular matricies
 ```js
 var A = new Matrixs([[1,2,3],[4,5,6],[7,8,5]]); //creates a 3x3 matrix 
 A.add(1).add([[1,2,3],[0,0,0],[0,0,0]]).print(); // adds scalar of 1 to matrix, then adds a 3x3 matrix, then prints result.
@@ -70,5 +70,19 @@ Matrixs.multiply(A,B).add(1).print()
 //30.000		41.000		52.000"
 ```
 
-
+**Misc useful matrix commands :**
+Here are some useful commands
+```js
+var A = new Matrixs([[1,2,3],[4,5,6],[7,8,5]]); //creates a 3x3 matrix 
+A.length(); //Result: 9
+A.shape(); // Result: [3,3]
+A.max(); // Result: 8 
+A.mean(); // Result: 4.55
+A.min(); // Result: 1
+A.transpose().print(); 
+//Results
+//1.000		2.000		3.000
+//4.000		5.000		6.000
+//7.000		8.000		5.000"
+```
 
