@@ -4,7 +4,7 @@ A math library for javascript with an emphasis on arbitrary size matrix opperati
 
 ## Library Usage
 Currently Maths.js is intended to be used in browsers so include it in the traditional manner. 
-```js
+```html
 <script type="text/javascript" src="Maths.js"></script>
 ```
 
@@ -35,13 +35,12 @@ A.add(1).add([[1,2,3],[0,0,0],[0,0,0]]).print(); // adds scalar of 1 to matrix, 
 **Matrix Inversion:**
 Maths.js can invert arbitrary sized(e.g. 100x100) non singular matricies
 ```js
-var A = new Matrixs([[1,2,3],[4,5,6],[7,8,5]]); //creates a 3x3 matrix 
-A.add(1).add([[1,2,3],[0,0,0],[0,0,0]]).print(); // adds scalar of 1 to matrix, then adds a 3x3 matrix, then prints result.
+var A = new Matrixs([[1,2,3],[4,5,6],[7,8,5]]); //creates a 3x3 matrix
 A.invert().print(); //Prints after inverison. Print is set to 3 decimals 
 //Results: 
-//-0.964		1.179		-0.250
-//0.929			-1.357		0.500
-//-0.107		0.464		-0.250
+//-1.917		1.167		-0.250
+//1.833		-1.333		0.500
+//-0.250		0.500		-0.250
 ```
 
 **Matrix Multiplicaiton:**
