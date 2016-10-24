@@ -74,20 +74,30 @@ Matrices can grow horizontally or vertically
 ```js
 var A = new Matrixs([[1,2,3],[4,5,6],[7,8,5]]); //creates a 3x3 matrix 
 A.catVertical([9,10,11]).print();
-//Results
+//Results, 3x3 --> 4x3
 //1.000		2.000		3.000
 //4.000		5.000		6.000
 //7.000		8.000		5.000
 //9.000		10.000		11.000
 
-A.catHorizontal([[1],[2],[3],[4]]).print();
-//Results 
-//.000		2.000		3.000		1.000
-//4.000		5.000		6.000		2.000
-//7.000		8.000		5.000		3.000
-//9.000		10.000		11.000		4.000
-```
+A.catHorizontal([[1,1],[2,2],[3,3],[4,4]]).print();
+//Results, 4x3 --> 4x5
+//1.000		2.000		3.000		1.000		1.000
+//4.000		5.000		6.000		2.000		2.000
+//7.000		8.000		5.000		3.000		3.000
+//9.000		10.000		11.000		4.000		4.000
 
+A.columns(1,2).print(); // Get 2nd & 3rd columns 
+//Result: 
+//2.000		3.000
+//5.000		6.000
+//8.000		5.000
+//10.000		11.000
+
+A.rows(2).print();
+//Result: 
+//7.000		8.000		5.000		3.000		3.000
+```
 **Misc Useful Matrix Commands :**
 Here are some useful commands
 ```js

@@ -427,7 +427,47 @@ function Matrixs(M)
 
 		return M;
 	}
+	
+	function matrix_get_columns(A,start,end)
+	{
+		var M = [];
+		var m = A.length; 
+		var startPoint = start; 
+		var length = 1; 
+		if(typeof end != 'undefined')
+		{
+			length += end - start; 
+		}
+		
+		for(var i = 0; i <m; i++)
+		{
+			M[i] = [];
+			for(var j = 0; j < length; j++)
+			{
+				M[i][j] = A[i][j+startPoint];
+			}
+		}
+		return M;
+	}
 
+	function matrix_get_rows(A,start,end)
+	{
+		var M = [];
+		var m = A.length; 
+		var startPoint = start; 
+		var length = 1; 
+		if(typeof end != 'undefined')
+		{
+			length += end - start; 
+		}
+		
+		for(i = 0; i < length; i++)
+		{
+			M[i] = A[i+start];
+		}
+		return M;
+	}
+	
 	function isMatrixMultiplyValid(A,B)
 	{
 		var returnVal = false;
@@ -1130,6 +1170,15 @@ function Matrixs(M)
 		return this;
 	};
 	
+	
+	Matrixs.prototype.rows = function(i,j)
+	{
+		
+		this.value = matrix_subtract(this.value,mm(x).value);
+		return this;
+	};
+	
+	
 	Matrixs.prototype.push = function(x)
 	{
 		this.value = matrix_push(this.value,mm(x).value);
@@ -1172,6 +1221,46 @@ function Matrixs(M)
 	Matrixs.multiply = function(A,B)
 	{
 		return new Matrixs(matrix_multiply2(mm(A).value,mm(B).value));
+	}
+	
+	Matrixs.prototype.columns = function(start,end)
+	{
+		return new Matrixs(matrix_get_columns(this.value,start,end));
+	}
+	
+	Matrixs.columns = function(A,start,end)
+	{
+		return new Matrixs(matrix_get_columns(mm(A).value,start,end));
+	}
+	
+	Matrixs.prototype.column = function(start)
+	{
+		return new Matrixs(matrix_get_columns(this.value,start));
+	}
+	
+	Matrixs.column = function(A,start)
+	{
+		return new Matrixs(matrix_get_columns(mm(A).value,start));
+	}
+	
+	Matrixs.prototype.rows = function(start,end)
+	{
+		return new Matrixs(matrix_get_rows(this.value,start,end));
+	}
+	
+	Matrixs.rows = function(A,start,end)
+	{
+		return new Matrixs(matrix_get_rows(mm(A).value,start,end));
+	}
+	
+	Matrixs.prototype.row = function(start)
+	{
+		return new Matrixs(matrix_get_rows(this.value,start));
+	}
+	
+	Matrixs.row = function(A,start)
+	{
+		return new Matrixs(matrix_get_rows(mm(A).value,start));
 	}
 	
 	Matrixs.prototype.mean = function()
