@@ -69,8 +69,9 @@ Matrixs.multiply(A,B).add(1).print()
 //30.000		41.000		52.000
 ```
 
-**Growing/Concatenation Matrix**
+**Growing/Concatenation Matrices and Column/Row Fetching**
 Matrices can grow horizontally or vertically 
+```js
 var A = new Matrixs([[1,2,3],[4,5,6],[7,8,5]]); //creates a 3x3 matrix 
 A.catVertical([9,10,11]).print();
 //Results
@@ -85,20 +86,7 @@ A.catHorizontal([[1],[2],[3],[4]]).print();
 //4.000		5.000		6.000		2.000
 //7.000		8.000		5.000		3.000
 //9.000		10.000		11.000		4.000
-
-
-```js
-var A = new Matrixs([[1,2],[3,4],[5,6]]); // 3x2 Matrix 
-var B = new Matrixs([[1,2,3],[4,5,6]]); // 3x2 Matrix 
-Matrixs.multiply(A,B).add(1).print()
-//Results 
-//10.000		13.000		16.000
-//20.000		27.000		34.000
-//30.000		41.000		52.000
 ```
-
-
-
 
 **Misc Useful Matrix Commands :**
 Here are some useful commands
