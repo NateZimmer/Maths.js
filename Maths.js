@@ -515,6 +515,24 @@ function Matrixs(M)
 		return M;
 	}
 
+	
+	function matrix_cat_horizontal2(A,B)
+	{
+		var M = [];
+		
+		if(A.length != B.length)
+		{
+			throw 'Must have same number of rows'
+		}			
+		
+		M = matrix_copy(A);
+		for(var i =0; i<M.length;i++) // for rows of M
+		{
+			M[i] = M[i].concat(B[i]);
+		}
+		return M;
+	}
+	
 	function matrix_cat_horizontal(A,B)
 	{
 		var M = [];
@@ -1118,15 +1136,25 @@ function Matrixs(M)
 		return this;
 	};
 	
+	Matrixs.catVertical = function(A,B)
+	{
+		return new Matrixs(matrix_push(mm(A).value,mm(B).value));
+	}
+	
 	Matrixs.prototype.catVertical = function(x)
 	{
 		this.value = matrix_push(this.value,mm(x).value);
 		return this;
 	};	
 	
+	Matrixs.catHorizontal = function(A,B)
+	{
+		return new Matrixs(matrix_cat_horizontal2(mm(A).value,mm(B).value));
+	}
+	
 	Matrixs.prototype.catHorizontal = function(x)
 	{
-		this.value = matrix_push(this.value,mm(x).value);
+		this.value = matrix_cat_horizontal2(this.value,mm(x).value);
 		return this;
 	};	
 	

@@ -1,7 +1,6 @@
 ## Maths.js
 A math library for javascript with an emphasis on arbitrary size matrix opperations. For security reasons, this library does not use eval operator. This library may not be fully speed optimized but is designed for usability.  
 
-
 ## Matrix Usage
 
 **Matrix Creation:** 
@@ -70,6 +69,37 @@ Matrixs.multiply(A,B).add(1).print()
 //30.000		41.000		52.000
 ```
 
+**Growing/Concatenation Matrix**
+Matrices can grow horizontally or vertically 
+var A = new Matrixs([[1,2,3],[4,5,6],[7,8,5]]); //creates a 3x3 matrix 
+A.catVertical([9,10,11]).print();
+//Results
+//1.000		2.000		3.000
+//4.000		5.000		6.000
+//7.000		8.000		5.000
+//9.000		10.000		11.000
+
+A.catHorizontal([[1],[2],[3],[4]]).print();
+//Results 
+//.000		2.000		3.000		1.000
+//4.000		5.000		6.000		2.000
+//7.000		8.000		5.000		3.000
+//9.000		10.000		11.000		4.000
+
+
+```js
+var A = new Matrixs([[1,2],[3,4],[5,6]]); // 3x2 Matrix 
+var B = new Matrixs([[1,2,3],[4,5,6]]); // 3x2 Matrix 
+Matrixs.multiply(A,B).add(1).print()
+//Results 
+//10.000		13.000		16.000
+//20.000		27.000		34.000
+//30.000		41.000		52.000
+```
+
+
+
+
 **Misc Useful Matrix Commands :**
 Here are some useful commands
 ```js
@@ -86,5 +116,6 @@ A.transpose().print();
 //7.000		8.000		5.000
 
 ```
-**License: MIT :**
+
+## License: MIT:
 https://opensource.org/licenses/MIT
