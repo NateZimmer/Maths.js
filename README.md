@@ -39,7 +39,7 @@ var A = new Matrixs([[1,2,3],[4,5,6],[7,8,5]]); //creates a 3x3 matrix
 A.invert().print(); //Prints after inverison. Print is set to 3 decimals 
 //Results: 
 //-1.917		1.167		-0.250
-//1.833		-1.333		0.500
+//1.833			-1.333		0.500
 //-0.250		0.500		-0.250
 ```
 
