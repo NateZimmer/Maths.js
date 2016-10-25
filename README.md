@@ -1,8 +1,5 @@
-
-![maths.js](https://raw.githubusercontent.com/NateZimmer/Maths.js/master/BannerImage.png)
-
+<div style="text-align:center"><img src ="https://raw.githubusercontent.com/NateZimmer/Maths.js/master/BannerImage.png" /></div>
 ## Maths.js
-
 
 A math library for javascript with an emphasis on arbitrary size matrix opperations. For security reasons, this library does not use eval operator. This library may not be fully speed optimized but is designed for usability.  
 
