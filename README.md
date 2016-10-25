@@ -1,6 +1,6 @@
-<div style="text-align:center">
+<p align="center">
 <img src ="https://raw.githubusercontent.com/NateZimmer/Maths.js/master/BannerImage.png">
-</div>
+</p>
 
 ## Maths.js
 
