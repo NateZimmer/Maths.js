@@ -1,6 +1,10 @@
-## Maths.js
-A math library for javascript with an emphasis on arbitrary size matrix opperations. For security reasons, this library does not use eval operator. This library may not be fully speed optimized but is designed for usability.  
 
+![maths.js](https://raw.github.com/natezimmer/mathsjs/master/BannerImage.png)
+
+## Maths.js
+
+
+A math library for javascript with an emphasis on arbitrary size matrix opperations. For security reasons, this library does not use eval operator. This library may not be fully speed optimized but is designed for usability.  
 
 ## Library Usage
 Currently Maths.js is intended to be used in browsers so include it in the traditional manner. 
