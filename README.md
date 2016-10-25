@@ -1,5 +1,5 @@
 
-![maths.js](https://raw.github.com/natezimmer/mathsjs/master/BannerImage.png)
+![maths.js](https://raw.githubusercontent.com/NateZimmer/Maths.js/master/BannerImage.png)
 
 ## Maths.js
 
