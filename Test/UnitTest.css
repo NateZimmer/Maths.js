@@ -1,0 +1,56 @@
+
+h1{
+    margin: 0px;
+    background-color: #444;
+    color: #FFF;
+    margin-bottom: 10px;
+    padding: 5px 0px 5px;
+    font-size: 16px;
+    text-transform: uppercase;
+}
+
+h2{
+    color: green;
+    margin-bottom: 10px;
+    padding: 5px 0px 5px;
+    font-size: 16px;
+    text-transform: uppercase;
+}
+
+h3{
+    color: red;
+    margin-bottom: 10px;
+    padding: 5px 0px 5px;
+    font-size: 16px;
+    text-transform: uppercase;
+}
+
+.matrixPrint{
+	background-color: #FFF;
+    display: inline-block;
+    margin: 10px;
+    padding: 5px;
+}
+
+.codeText{
+	background-color: #FFF;
+    display: inline-block;
+    margin: 10px;
+    padding: 5px;
+}
+
+.testSection{
+    width: 600px;
+    min-height: 100px;
+    background-color: #EEE;
+    box-shadow: 0px 0px 10px rgba(0,0,0,0.2);
+    display: block;
+    border: 1px solid #FFF;
+	font-family: tahoma;
+    font-size: 12px;
+    margin: 10px auto;
+}
+
+#content{
+	text-align: center;
+}

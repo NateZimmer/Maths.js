@@ -18,7 +18,56 @@ function Maths()
 }
 
 (function()
-{
+{	
+	// Closure
+	(function() {
+	  /**
+	   * Decimal adjustment of a number.
+	   *
+	   * @param {String}  type  The type of adjustment.
+	   * @param {Number}  value The number.
+	   * @param {Integer} exp   The exponent (the 10 logarithm of the adjustment base).
+	   * @returns {Number} The adjusted value.
+	   */
+	  function decimalAdjust(type, value, exp) {
+		// If the exp is undefined or zero...
+		if (typeof exp === 'undefined' || +exp === 0) {
+		  return Math[type](value);
+		}
+		value = +value;
+		exp = +exp;
+		// If the value is not a number or the exp is not an integer...
+		if (isNaN(value) || !(typeof exp === 'number' && exp % 1 === 0)) {
+		  return NaN;
+		}
+		// Shift
+		value = value.toString().split('e');
+		value = Math[type](+(value[0] + 'e' + (value[1] ? (+value[1] - exp) : -exp)));
+		// Shift back
+		value = value.toString().split('e');
+		return +(value[0] + 'e' + (value[1] ? (+value[1] + exp) : exp));
+	  }
+
+	  // Decimal round
+	  if (!Math.round10) {
+		Math.round10 = function(value, exp) {
+		  return decimalAdjust('round', value, exp);
+		};
+	  }
+	  // Decimal floor
+	  if (!Math.floor10) {
+		Math.floor10 = function(value, exp) {
+		  return decimalAdjust('floor', value, exp);
+		};
+	  }
+	  // Decimal ceil
+	  if (!Math.ceil10) {
+		Math.ceil10 = function(value, exp) {
+		  return decimalAdjust('ceil', value, exp);
+		};
+	  }
+	})();
+	
 	if(Array.prototype.equals)
     console.warn("Overriding existing Array.prototype.equals. Possible causes: New API defines the method, there's a framework conflict or you've got double inclusions in your code.");
 	// attach the .equals method to Array's prototype to call it on any array
@@ -254,6 +303,20 @@ function Maths()
 		return returnVal;
 	}
 
+	function matrix_ones(rows,cols)
+	{
+		var M=[];
+		for(var i = 0; i<rows;i++)
+		{
+			M[i]=[];
+			for(var j=0; j<cols;j++)
+			{
+				M[i].push(1);
+			}
+		}
+		return M;
+	}
+	
 	function matrix_clamp(X,lb,ub)
 	{
 		var error = [];
@@ -374,6 +437,26 @@ function Maths()
 		console.log('yo');
 	}
 	
+	
+	function lineFnc(X,param)
+	{
+		return X*param.m + param.b;
+	}
+	
+	function matrix_apply(X,func,param)
+	{
+		var M = []
+		for(var i = 0; i < X.length; i++)
+		{
+			M[i] = [];
+			for(var j = 0; j < X[0].length; j++)
+			{
+				M[i][j] = func(X[i][j],param);
+			}
+		}
+		return M;
+	}
+	
 	function matrix_add(A,B)
 	{
 		M = [];
@@ -434,6 +517,11 @@ function Maths()
 			throw 'Demension Error!';
 		}
 		return returnVal; 
+	}
+	
+	function matrix_lsq(A,b)
+	{
+		return A.transpose().multiply(A).invert().multiply(A.transpose()).multiply(b); // Normal equation (A^T * A)^-1 * A^T * b 
 	}
 
 	function matrix_mean(A)
@@ -571,13 +659,13 @@ function Maths()
 			B = getScalar(B);
 			returnVal = matrix_multiplyc(A,B);	
 		}
-		else if(matrixSameSize)
-		{
-			returnVal = matrix_multiply_same(A,B);
-		}
 		else if(isMatrixMultiplyValid(A,B))
 		{
 			returnVal = matrix_multiply(A,B);
+		}
+		else if(matrixSameSize)
+		{
+			returnVal = matrix_multiply_same(A,B);
 		}
 		else
 		{
@@ -1003,6 +1091,53 @@ function Maths()
 		return M;
 	}
 	
+	function get_gradient(data, gradFnc)
+	{
+		return gradFnc(data);
+	}
+	
+	function get_jacobian(datas,gradFnc)
+	{
+		var J = [];
+		for(var i = 0 ; i < datas.length; i++)
+		{
+			J[i] = get_gradient(datas[i],gradFnc);
+		}
+		return J;
+	}
+	
+	function get_residuals(dataObj,fncHandle,params)
+	{
+		var r = [];
+		for(var i = 0; i < dataObj.input.length; i++)
+		{
+			r[i] = fncHandle(dataObj.input[i]) - dataObj.output[i]; 
+		}
+		return r; 
+	}
+	
+	function gauss_newton(dataObj,guess,fncHandle,gradFnc,options)
+	{
+		var resultObj = {};
+		resultObj.itterationValues = [guess]; 
+		resultObj.itterationCost = [];
+		
+		var r = get_residuals(dataObj,fncHandle,guess);
+		
+		for(var i = 0 ; i < 50; i++)
+		{
+			var J = get_jacobian(dataObj.input,gradFnc);	
+			var step = Matrixs.multiply(Matrixs.transpose(J),J).invert().multiply(Matrixs.transpose(J)).multiply(r);
+			var nextModel = Matrixs.subtract(guess,step);
+			resultObj.itterationValues[i] = nextModel.value;
+			r = get_residuals(dataObj,fncHandle, nextModel.value);
+			 
+		}
+		
+		
+		
+	}
+	
 	function matrix_push(A,B)
 	{
 		var aColumns = A[0].length;
@@ -1017,6 +1152,21 @@ function Maths()
 		for(var i =0; i < B.length; i++)
 		{
 			M.push(B[i]);
+		}
+		return M;
+	}
+	
+	function matrix_round(A,d)
+	{
+		var d = -1 * d;
+		var M = [];
+		for(var i = 0; i < A.length; i++)
+		{
+			M[i] = [];
+			for(var j = 0; j < A[0].length; j++)
+			{
+				M[i][j] = Math.round10(A[i][j],d);	
+			}
 		}
 		return M;
 	}
@@ -1358,10 +1508,21 @@ function Maths()
 		return mm(matrix_randn(m,n));
 	}
 	
+	Matrixs.round = function(A,d)
+	{
+		return mm(matrix_round(mm(A).value,d));
+	}
+	
+	Matrixs.prototype.round = function(d)
+	{
+		var M = matrix_round(this.value,d);
+		return mm(M);
+	};
+	
 	Matrixs.prototype.add = function(x)
 	{
-		this.value = matrix_add(this.value,mm(x).value);
-		return this; 
+		var M = matrix_add(this.value,mm(x).value);
+		return mm(M);
 	};
 	
 	Matrixs.add = function(A,B)
@@ -1371,23 +1532,19 @@ function Maths()
 	
 	Matrixs.prototype.subtract = function(x)
 	{
-		this.value = matrix_subtract(this.value,mm(x).value);
-		return this;
+		var M = matrix_subtract(this.value,mm(x).value);
+		return mm(M);
 	};
 	
-	
-	Matrixs.prototype.rows = function(i,j)
+	Matrixs.subtract = function(A,B)
 	{
-		
-		this.value = matrix_subtract(this.value,mm(x).value);
-		return this;
-	};
-	
+		return new Matrixs(matrix_subtract(mm(A).value,mm(B).value));
+	}
 	
 	Matrixs.prototype.push = function(x)
 	{
 		this.value = matrix_push(this.value,mm(x).value);
-		return this;
+		return mm(M);
 	};
 	
 	Matrixs.catVertical = function(A,B)
@@ -1397,8 +1554,8 @@ function Maths()
 	
 	Matrixs.prototype.catVertical = function(x)
 	{
-		this.value = matrix_push(this.value,mm(x).value);
-		return this;
+		var M = matrix_push(this.value,mm(x).value);
+		return mm(M);
 	};	
 	
 	Matrixs.catHorizontal = function(A,B)
@@ -1408,19 +1565,14 @@ function Maths()
 	
 	Matrixs.prototype.catHorizontal = function(x)
 	{
-		this.value = matrix_cat_horizontal2(this.value,mm(x).value);
-		return this;
+		var M = matrix_cat_horizontal2(this.value,mm(x).value);
+		return mm(M);
 	};	
-	
-	Matrixs.subtract = function(A,B)
-	{
-		return new Matrixs(matrix_subtract(mm(A).value,mm(B).value));
-	}
 	
 	Matrixs.prototype.multiply = function(x)
 	{
-		this.value = matrix_multiply2(this.value,mm(x).value);
-		return this;
+		var M = matrix_multiply2(this.value,mm(x).value);
+		return mm(M);
 	};
 	
 	Matrixs.multiply = function(A,B)
@@ -1500,8 +1652,8 @@ function Maths()
 	
 	Matrixs.prototype.transpose = function()
 	{
-		this.value = matrix_transpose(this.value);
-		return this;
+		var M = matrix_transpose(this.value);
+		return mm(M);
 	};
 	
 	Matrixs.zeros = function(m,n)
@@ -1524,10 +1676,16 @@ function Maths()
 		return matrix_demension(this.value);
 	};
 	
+	Matrixs.prototype.apply = function(fnc,param)
+	{
+		var M = matrix_apply(this.value,fnc,param);
+		return mm(M);
+	};
+	
 	Matrixs.prototype.invert = function()
 	{
-		this.value = matrix_invert(this.value);
-		return this;
+		var M = matrix_invert(this.value);
+		return mm(M);
 	};
 	
 	Matrixs.invert = function(A)
@@ -1539,6 +1697,22 @@ function Maths()
 	{
 		return print_matrix(this.value);
 	};
+	
+	Matrixs.ones = function(m,n)
+	{
+		return mm(matrix_ones(m,n));
+	}
+	
+	Matrixs.lsq = function(A,b)
+	{
+		return matrix_lsq(mm(A),mm(b));
+	}
+	
+	Matrixs.prototype.lsq = function(b)
+	{
+		return matrix_lsq(mm(this.value),mm(b));
+	};
+	
 	
 })();
 
