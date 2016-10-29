@@ -97,11 +97,42 @@ var t10 = {
 addTest(t10);
 
 addTest({
+	testName: 'Test Matrix Mean',
+	testString: 'var A = new Matrixs([[1,2,3],[4,5,6],[7,8,9]]); \
+	var A = Matrixs.make(A.mean());\
+	',
+	expectedVal: [[5]],
+});
+
+addTest({
+	testName: 'Test Matrix Max',
+	testString: 'var A = new Matrixs([[1,2,3],[4,5,6],[7,8,9]]); \
+	var A = Matrixs.make(A.max());\
+	',
+	expectedVal: [[9]],
+});
+
+addTest({
+	testName: 'Test Matrix Min',
+	testString: 'var A = new Matrixs([[1,2,3],[4,5,6],[7,8,9]]); \
+	var A = Matrixs.make(A.min());\
+	',
+	expectedVal: [[1]],
+});
+
+addTest({
+	testName: 'Test Matrix Sum',
+	testString: 'var A = new Matrixs([[1,2,3],[4,5,6],[7,8,9]]); \
+	var A = Matrixs.make(A.sum());\
+	',
+	expectedVal: [[45]],
+});
+
+addTest({
 	testName: 'Matrix Cat Horizontal',
 	testString: 'var A = new Matrixs([[1,2,3],[4,5,6],[7,8,5]]); \
 	A = A.catHorizontal([[1],[2],[3]]);',
 	expectedVal: [[1,2,3,1], [4,5,6,2], [7,8,5,3]],
-	note: 'Result was rounded to 3 decimal places.'
 });
 
 addTest({
@@ -109,7 +140,45 @@ addTest({
 	testString: 'var A = new Matrixs([[1,2,3],[4,5,6],[7,8,5]]); \
 	A = A.catVertical([[1,2,3]]);',
 	expectedVal: [[1,2,3], [4,5,6], [7,8,5],[1,2,3]],
-	note: 'Result was rounded to 3 decimal places.'
+});
+
+addTest({
+	testName: 'Matrix shape',
+	testString: 'var A = new Matrixs([[1,2],[4,5],[7,8]]); \
+	A = Matrixs.make(A.shape());',
+	expectedVal: [[3,2]],
+});
+
+addTest({
+	testName: 'Matrix columns',
+	testString: 'var A = new Matrixs([[1,2,3,4],[4,5,5,6],[7,8,7,6]]); \
+	A = A.columns(1,2);',
+	expectedVal: [[2,3],[5,5],[8,7]],
+});
+
+addTest({
+	testName: 'Matrix rows',
+	testString: 'var A = new Matrixs([[1,2,3,4],[4,5,5,6],[7,8,7,6]]); \
+	A = A.rows(1,2);',
+	expectedVal: [[4,5,5,6],[7,8,7,6]],
+});
+
+addTest({
+	testName: 'Matrix range',
+	testString: 'var A = Matrixs.range(1,3);',
+	expectedVal: [[1],[2],[3]],
+});
+
+addTest({
+	testName: 'Matrix ones',
+	testString: 'var A = Matrixs.ones(3,3);',
+	expectedVal: [[1,1,1],[1,1,1],[1,1,1]],
+});
+
+addTest({
+	testName: 'Matrix ident',
+	testString: 'var A = Matrixs.ident(3,3);',
+	expectedVal: [[1,0,0],[0,1,0],[0,0,1]],
 });
 
 addTest({
@@ -150,7 +219,18 @@ function executeUnitTests()
 {
 	for(var i = 0; i < globalTestObjResults.test.length; i++)
 	{
-		var testPassed = runTest(globalTestObjResults.test[i]);
+		var testPassed = false; 
+		
+		try{ 
+			testPassed = runTest(globalTestObjResults.test[i]);
+		}
+		catch(err)
+		{
+			console.log(err);
+			globalTestObjResults.test[i].testPassed = false; 
+			createTestDiv(globalTestObjResults.test[i]);
+		}
+		
 		globalTestObjResults.failedTests += (testPassed) ? 0 : 1;
 		if(!testPassed)
 		{

@@ -1,0 +1,15 @@
+{
+  "name": "mysite",
+  "version": "1.0.1",
+  "description": "This is a test of my first npm based website",
+  "main": "index.js",
+  "scripts": {
+    "build": "browserify package.js -o Maths.js",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "",
+  "license": "MIT",
+  "devDependencies": {
+    "browserify": "^13.1.1"
+  }
+}
