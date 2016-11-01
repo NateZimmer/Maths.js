@@ -46,6 +46,18 @@ function getSumOfMatrix(matrixInput)
     return matrix_flatten(matrixInput).reduce(function(a, b) { return a + b; }, 0);
 }
 
+//Find sum of array: [1,2,3] --> 6
+function getRMSOfMatrix(matrixInput)
+{
+    var M = matrix_flatten(matrixInput); 
+    for(var i = 0; i < M.length; i++)
+    {
+        M[i] = M[i]*M[i];
+    }
+    return Math.sqrt(getSumOfMatrix(M)/M.length); 
+
+}
+
 //Finds the number of elements of a array: 50x50 --> 2500
 function matrix_length(M)
 {
@@ -68,11 +80,15 @@ function matrix_round(A,d)
     return M;
 }
 
-
 // Add functions to parent class 
 matrix.prototype.mean = function()
 {
     return matrix_mean(this.value);
+};
+
+matrix.prototype.rms = function()
+{
+    return getRMSOfMatrix(this.value);
 };
 
 matrix.prototype.min = function()
@@ -93,6 +109,11 @@ matrix.prototype.sum = function()
 matrix.prototype.length = function()
 {
     return matrix_length(this.value);
+};
+
+matrix.prototype.unroll = function()
+{
+    return matrix_flatten(this.value);
 };
 
 matrix.round = function(A,d)

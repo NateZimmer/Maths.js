@@ -6,6 +6,36 @@ The above copyright notice and this permission notice shall be included in all c
 THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 */ 
 
-require('./Matrixs/matrix');
-require('./Solvers/solvers');
-require('./Models/models')
+// Model of the form: m*x +b || param[0]*x + param[1]
+
+function lineObj(x)
+{
+    this.param = x; //paramters 
+};
+
+lineObj.type = 'line';
+
+// Evaluate function for a array of points 
+lineObj.prototype.fnc = function(x)
+{
+    var M = [];
+    for(var i = 0; i < x.length; i++)
+    {
+        M[i] = [ this.param[0] * x[i][0] + this.param[1]] ; // y = a*x + b 
+    }
+    return M;   
+}
+
+//Get Gradient array of points  
+lineObj.prototype.grad = function(x)
+{
+    var M = [];
+
+    for(var i = 0; i < x.length; i++)
+    {
+        M[i] = [x[i][0] , 1];
+    }
+    return M; 
+}
+
+module.exports = lineObj;  

@@ -6,6 +6,35 @@ The above copyright notice and this permission notice shall be included in all c
 THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 */ 
 
-require('./Matrixs/matrix');
-require('./Solvers/solvers');
-require('./Models/models')
+var matrix = require('./matrixs');
+
+
+//Returns the diagonal elements of a matrix; 
+function matrix_diag(A){
+    var M = []; //Prep new matrix 
+
+    for(var i=0; i<A.length;i++)
+    {
+        M[i] = [];
+        for(var j = 0; j <A[0].length; j++)
+        {
+            M[i][j] =  (i==j) ? A[i][j] : 0; 
+        }
+    }
+    return M;
+}
+
+
+//Add to parent class 
+matrix.prototype.diag = function()
+{
+    var M = matrix_diag(this.value);
+    return matrix.make(M);
+};
+
+
+//Add to parent class 
+matrix.diag = function(A)
+{
+    return matrix.make(A).diag();
+}

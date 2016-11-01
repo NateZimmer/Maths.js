@@ -6,6 +6,36 @@ The above copyright notice and this permission notice shall be included in all c
 THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 */ 
 
-require('./Matrixs/matrix');
-require('./Solvers/solvers');
-require('./Models/models')
+// Model of the form: a*b^x || 
+
+function modelObj(x)
+{
+    this.param = x; //paramters 
+};
+
+modelObj.type = 'power';
+
+modelObj.prototype.fnc = function(x)
+{
+    var M = [];
+    for(var i = 0; i < x.length; i++)
+    {
+        M[i] = [ this.param[0] * Math.pow(x[i][0],this.param[1])] ; // y = a*x^b 
+    }
+    return M;   
+}
+
+modelObj.prototype.grad = function(x)
+{
+    var M = [];
+
+    for(var i = 0; i < x.length; i++)
+    {
+        M[i] = [];
+        M[i][0] = Math.pow(x[i][0],this.param[1]);
+        M[i][1] = this.param[0] * Math.log(x[i][0]) * Math.pow(x[i][0],this.param[1]);
+    }
+    return M; 
+}
+
+module.exports = modelObj;  

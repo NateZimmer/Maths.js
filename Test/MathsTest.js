@@ -215,6 +215,46 @@ addTest({
 });
 
 
+addTest({
+	testName: 'RMS',
+	testString: 'var A = Matrixs.make([-2.5,2.5,-2.5,2.5,-2.5,2.5]); \
+	A = Matrixs.make(A.rms()).round(3);\
+	',
+	expectedVal: [[2.5]],
+});
+
+addTest({
+	testName: 'Matrix Diag',
+	testString: 'var A = new Matrixs([[1,2,3],[4,5,6],[7,8,9]]); \
+	A = A.diag();',
+	expectedVal: [[1,0,0], [0,5,0], [0,0,9]],
+});
+
+addTest({
+	testName: 'Gauss Newton Test',
+	testString: '\
+	var X = Matrixs.range(0.1,5).value; \
+	var Y = (new Models.power([2,2])).fnc(X); \
+	var inputObj = {input:X, output:Y}; \
+	var modelObj = new Models.power([1,1]); \
+	var resultObj = Solvers.gaussNewton(inputObj,modelObj); \
+	var A = Matrixs.make(resultObj.solution).round(2);',
+	expectedVal : [[2,2]],
+});
+
+addTest({
+	testName: 'Levenberg Marquadrt Test',
+	testString: '\
+	var X = Matrixs.range(0.1,5).value; \
+	var Y = (new Models.power([2,2])).fnc(X); \
+	var inputObj = {input:X, output:Y}; \
+	var modelObj = new Models.power([1,1]); \
+	var resultObj = Solvers.levenbergMarquardt(inputObj,modelObj); \
+	var A = Matrixs.make(resultObj.solution).round(2);',
+	expectedVal : [[2,2]],
+});
+
+
 function executeUnitTests()
 {
 	for(var i = 0; i < globalTestObjResults.test.length; i++)

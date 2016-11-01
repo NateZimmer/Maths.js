@@ -8,15 +8,20 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
 
 var matrix = require('./matrixs');
 
-function print_matrix(M){
+
+//Print matrix 
+
+function print_matrix(M)
+{
     var nRows = M.length;
     var nColumns = M[0].length;
-    var i;
     var textString = '';
-    for(var i=0; i<nRows; i+=1 ){
+
+    for(var i=0; i<nRows; i+=1 )
+    {
         for(var j = 0; j <nColumns; j++)
         {
-            textString +=M[i][j].toFixed(3)+'\t\t'
+            textString += M[i][j].toFixed(3)+'\t\t';
         }
         textString = textString.substr(0,textString.length-2); // Remove extra
         textString += '\n';
