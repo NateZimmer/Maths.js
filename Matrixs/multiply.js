@@ -129,3 +129,4 @@ matrix.multiply = function(A,B)
 {
     return new matrix(matrix_multiply(matrix.make(A).value,matrix.make(B).value));
 }
+

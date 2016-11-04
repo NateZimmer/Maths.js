@@ -6,32 +6,57 @@ The above copyright notice and this permission notice shall be included in all c
 THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 */ 
 
-//Shows which elements of a matrix are over a lower or upper bound 
+var u = require('./mUtils');
 var matrix = require('./matrixs');
 
-function matrix_check_bounds(A,lb,ub)
-{
-    var M = []; 
-    for(var i = 0; i < A.length; i++)
+function quick_transpose(A){
+    
+    var M = []; //Prep new matrix 
+
+    for(var i=0; i<A[0].length; i++)
     {
-        M[i] = [];
-        for(var j = 0; j < A[0].length; j++)
-        {
-            M[i][j] = (Math.round10(A[i][j],-4)>ub) ? 1 : (Math.round10(A[i][j],-4)<lb) ? -1 : 0;
-        }
+        M[i]=A.map(function(value,index){return value[i];}); //Gets Column 
     }
+    return M;
+}
+
+function matrix_delete_row(A,rowNum)
+{
+    var M = u.matrix_copy(A);
+    M.splice(rowNum,1);
+    return M; 
+}
+
+function matrix_delete_column(A,colNum)
+{
+    var M = quick_transpose(A);
+    M.splice(colNum,1);
+    M = quick_transpose(M);
     return M; 
 }
 
 //Add to parent class 
-matrix.prototype.checkBounds = function(lb,ub)
+matrix.prototype.deleteRow = function(rowNum)
 {
-    var M = matrix_check_bounds(this.value,lb,ub);
+    var M = matrix_delete_row(this.value,rowNum);
     return matrix.make(M);
 };
 
 //Add to parent class 
-matrix.checkBounds = function(A,lb,ub)
+matrix.deleteRow = function(A,rowNum)
 {
-    return matrix.make(A).checkBounds(lb,ub);
+    return matrix.make(A).deleteRow(rowNum);
+}
+
+//Add to parent class 
+matrix.prototype.deleteCol = function(colNum)
+{
+    var M = matrix_delete_column(this.value,colNum);
+    return matrix.make(M);
+};
+
+//Add to parent class 
+matrix.deleteCol = function(A,colNum)
+{
+    return matrix.make(A).deleteCol(colNum);
 }

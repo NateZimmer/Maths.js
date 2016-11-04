@@ -254,6 +254,37 @@ addTest({
 	expectedVal : [[2,2]],
 });
 
+addTest({
+	testName: 'Bound check test',
+	testString: '\
+	var X = [0,1,2,6,4,-1,2,-5,10,2,22,-999];\
+	var A = Matrixs.checkBounds(X,0,5);',
+	expectedVal : [[0,0,0,1,0,-1,0,-1,1,0,1,-1]],
+});
+
+addTest({
+	testName: 'Delete row',
+	testString: '\
+	var A = new Matrixs([[1,2,3],[4,5,6],[7,8,9]]);\
+	A = A.deleteRow(1)',
+	expectedVal : [[1,2,3],[7,8,9]],
+});
+
+addTest({
+	testName: 'Delete column',
+	testString: '\
+	var A = new Matrixs([[1,2,3],[4,5,6],[7,8,9]]);\
+	A = A.deleteCol(1);',
+	expectedVal : [[1,3],[4,6],[7,9]],
+});
+
+addTest({
+	testName: 'Matrix zeros',
+	testString: '\
+	var A = Matrixs.zeros(4,2);',
+	expectedVal : [[0,0],[0,0],[0,0],[0,0]],
+});
+
 
 function executeUnitTests()
 {

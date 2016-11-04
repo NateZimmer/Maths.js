@@ -17,7 +17,12 @@ function range(min,step,max)
     var maxs = 0; 
     var increment = 1;
     
-    if((typeof max) == 'undefined')
+    if((typeof step)== 'undefined')
+    {
+        steps = min;
+        min = 0;
+    }
+    else if((typeof max) == 'undefined')
     {
         maxs = step;
         steps = Math.floor(maxs - min)+1;
@@ -37,6 +42,19 @@ function range(min,step,max)
     return M; 
 }
 
+function matrix_zeros(rows,cols)
+{
+    var M=[];
+    for(var i = 0; i<rows;i++)
+    {
+        M[i]=[];
+        for(var j=0; j<cols;j++)
+        {
+            M[i].push(0);
+        }
+    }
+    return M;
+}
 
 function matrix_ones(rows,cols)
 {
@@ -82,4 +100,9 @@ matrix.ones = function(m,n)
 matrix.ident = function(m,n)
 {
     return matrix.make(matrix_ident(m,n));
+}
+
+matrix.zeros = function(m,n)
+{
+    return matrix.make(matrix_zeros(m,n));
 }

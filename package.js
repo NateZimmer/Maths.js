@@ -8,4 +8,5 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
 
 require('./Matrixs/matrix');
 require('./Solvers/solvers');
-require('./Models/models')
+require('./Models/models');
+Plots = require('./Plots/plots');

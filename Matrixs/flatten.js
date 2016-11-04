@@ -6,19 +6,23 @@ The above copyright notice and this permission notice shall be included in all c
 THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 */ 
 
-require('./add');
-require('./subtract');
-require('./print');
-require('./multiply');
-require('./transpose');
-require('./stats');
-require('./invert');
-require('./shape');
-require('./create');
-require('./diag');
-require('./bound');
-require('./delete');
-require('./random');
-require('./flatten');
+var matrix = require('./matrixs');
 
-Matrixs = require('./matrixs');
+// Changes from 2D to 1D: [[1,2,3]] --> [1,2,3]
+function matrix_flatten(M)
+{
+    return ([].concat.apply([], M));
+}
+
+//Add to parent class 
+matrix.prototype.flatten = function()
+{
+    var M = matrix_flatten(this.value);
+    return 
+};
+
+//Add to parent class 
+matrix.flatten = function(A)
+{
+    return matrix.make(A).flatten();
+}
