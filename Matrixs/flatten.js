@@ -18,7 +18,7 @@ function matrix_flatten(M)
 matrix.prototype.flatten = function()
 {
     var M = matrix_flatten(this.value);
-    return 
+    return M;
 };
 
 //Add to parent class 

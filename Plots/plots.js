@@ -6,8 +6,6 @@ The above copyright notice and this permission notice shall be included in all c
 THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 */ 
 
-
-
 require('../Matrixs/matrix');
 var matrix = require('../Matrixs/matrixs');
 //var plotly = require('./plotly.min.js');
@@ -15,6 +13,7 @@ var matrix = require('../Matrixs/matrixs');
 var plotColorArrayScatter = ['rgba(0,100,200,0.2)','rgba(200,0,100,0.2)'];
 var plotColorArrayLine = ['rgba(0,100,200,0.9)','rgba(200,0,100,0.9)'];
 	
+
 var plotOptions = {};
 var yOverBound =1.1; 
 var yUnderBound = 0.9;
@@ -26,8 +25,12 @@ var plotDataObjs = [];
 var layout = { 
     xaxis: {
             fixedrange: true
-            }
+            },
+    yaxis: {
+        fixedrange:true,
+    }
 };
+
 
 // Highest level function for plot 
 function plots(inputObj,options)
@@ -35,7 +38,7 @@ function plots(inputObj,options)
     var objTypes = parse_data_obj(inputObj);
     prep_plot_data(inputObj,objTypes);
     //handle_plot_bounds(inputObj,objTypes);
-    plotArray = packageData(inputObj,objTypes);
+    plotArray = packageData(inputObj,objTypes,options);
     create_graph(options);
 }
 module.exports = plots;
@@ -144,8 +147,6 @@ function handle_plot_bounds(dataObj,objType)
             plotOptions.yaxis.min = extendLowerBound(M.min());
             plotOptions.yaxis.max = extendUpperBound(M.max()); 
 
-            matrix.range(0,40).catHorizontal()
-
         }
         else
         {
@@ -172,32 +173,72 @@ function handle_plot_bounds(dataObj,objType)
 
 
 // This function preps data for FLOTR2
-function packageData(dataObj,objType)
+function packageData(dataObj,objType,options)
 {
     // It is assumed that datOBj is in a array; 
-
+    var localData = null; 
     var plotDataArray = [];
     if(objType == 'Single Matrixs')
     {
         var localObj = {};
-        var localData = dataObj[0];
-        var dimensions = localData.shape()[1];
-        var points = localData.make(b).shape()[0];
         
+        if(Array.isArray(dataObj))
+        {
+            localData = dataObj[0];
+        }
+        else
+        {
+             localData = dataObj;
+        }
+       
+        var dimensions = localData.shape()[1];
+        var points = localData.shape()[0];
+
         if(dimensions==1)
         {
-            var A = matrix.range(points).catHorizontal(localData);
+            var A = matrix.range(points);
             localObj.x = A.flatten();
             
-            dataObj.y = localData.flatten(); 
+            localObj.y = localData.flatten(); 
+
+            if((typeof options) != 'undefined')
+            {
+                if((typeof options.type) != 'undefined')
+                {
+                    localObj.type = options.type;
+                    if(options.type=='scatter')
+                    {
+                        localObj.mode =  'markers'; 
+                    }
+                    else
+                    {
+                        localObj.mode =  'lines';
+                    }
+
+                }
+                localObj.marker = {}; 
+                
+                if((typeof options.color) == 'undefined')
+                {
+                    localObj.marker.color = options.color;
+                    localObj.marker.size = 20; 
+                }
+                else
+                {
+                    localObj.marker.color ='rbga(200,100,0,0.4)';
+                    localObj.marker.size = 20;
+                }
+
+            }
+
         }
         else // Assumes in proper format already
         {
-             dataObj.data = localData.value; 
+             localObj.data = localData.value; 
         }
-        plotDataArray.push(dataObj)
+        plotDataArray.push(localObj);
     }
-    return plotDataArrayj;
+    return plotDataArray;
 }
 
 function createPlotDiv()
@@ -225,9 +266,9 @@ function create_graph(options)
      graph = Plotly.newPlot('plotDiv', plotArray,layout,{displayModeBar: false});
 }
 
+
 function testPlotly()
 {
-    
     createPlotDiv();
     var trace1 = {
     x: [1, 2, 3, 4],
@@ -251,8 +292,8 @@ function testPlotly()
     };
 
     var data = [trace1, trace2, trace3];
-
     Plotly.newPlot('plotDiv', data,{title:'uSuck'},{displayModeBar: false});
+
 }
 
 
