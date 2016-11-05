@@ -1,23 +1,10 @@
 <p align="center">
 <img src ="https://raw.githubusercontent.com/NateZimmer/Maths.js/master/BannerImage.png">
 </p>
-## Maths.js
-A math library for javascript with an emphasis on arbitrary size matrix opperations. For security reasons, this library does not use eval operator. This library may not be fully speed optimized but is designed for usability.  
-
-## Library Usage
-Currently Maths.js is intended to be used in browsers so include it in the traditional manner. 
-```html
-<script type="text/javascript" src="Maths.js"></script>
-```
-**Maths.js with Plotting**
-```html
-<script type="text/javascript" src="plotly.min.js"></script>
-<script type="text/javascript" src="Maths.js"></script>
-```
-Maths.js can be used with [plotly](https://github.com/plotly/plotly.js) for visualization of data. 
 
 ## Matrix Usage
-Maths.js supports numerous matrixs opperations. Below is small sampling and see [here for the matrixs reference](Matrixs.md).  
+
+Maths.js supports numerous matrixs opperations. Below is small sampling and see here for the matrixs reference.  
 **Matrix Creation:** 
 ```js
 var A = new Matrixs([[1,2,3],[4,5,6],[7,8,5]); //creates a 3x3 matrix 
@@ -128,5 +115,4 @@ A.transpose().print();
 
 ```
 
-## License: MIT
-https://opensource.org/licenses/MIT
+
