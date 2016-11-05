@@ -160,7 +160,9 @@ function prep_plot_data(dataObj,objType)
 {
     if(objType == 'Single Matrixs')
     {
-        dataObj = [dataObj]; // Make into array  
+        if(!Array.isArray(dataObj)) {
+            dataObj = [dataObj]; // Make into array 
+        }
     }
 
     for(var i = 0; i < dataObj.length; i++)
