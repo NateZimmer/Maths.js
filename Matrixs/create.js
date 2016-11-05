@@ -42,9 +42,16 @@ function range(min,step,max)
     return M; 
 }
 
+
 function matrix_zeros(rows,cols)
 {
     var M=[];
+
+    if((typeof cols)== 'undefined')
+    {
+        cols = 1; 
+    }
+
     for(var i = 0; i<rows;i++)
     {
         M[i]=[];
@@ -56,9 +63,16 @@ function matrix_zeros(rows,cols)
     return M;
 }
 
+
 function matrix_ones(rows,cols)
 {
     var M=[];
+
+    if((typeof cols)== 'undefined')
+    {
+        cols = 1; 
+    }
+
     for(var i = 0; i<rows;i++)
     {
         M[i]=[];
@@ -73,7 +87,14 @@ function matrix_ones(rows,cols)
 
 function matrix_ident(m,n)
 {
+
     var M = [];
+
+    if((typeof n)== 'undefined')
+    {
+        n = 1; 
+    }
+
     for(var i = 0 ; i <m; i++)
     {
         M[i] = [];

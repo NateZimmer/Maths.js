@@ -13,14 +13,14 @@ var matrix = require('../Matrixs/matrixs');
 var plotColorArrayScatter = ['rgba(0,100,200,0.2)','rgba(200,0,100,0.2)'];
 var plotColorArrayLine = ['rgba(0,100,200,0.9)','rgba(200,0,100,0.9)'];
 	
-
-var plotOptions = {};
 var yOverBound =1.1; 
 var yUnderBound = 0.9;
-plotOptions.yaxis = {};
-plotOptions.xaxis = {};
 var plotDataObjs = [];
+var activePlotIndex = 0;
+var plotArray = [];
+var plotOptions = {};
 
+Plots ={};
 
 var layout = { 
     xaxis: {
@@ -32,16 +32,64 @@ var layout = {
 };
 
 
+var defaultScatterObj = {
+    x :[],
+    y :[],
+    mode : 'markers',
+    marker :{
+        size : 20,
+        colorscale : 'Viridis',
+        opacity : 0.5,
+    } 
+}
+
+var defaultLineObj = {
+    x :[],
+    y :[],
+    mode : 'lines',
+    color : 'rgba(255,0,0,1)',
+    line : {},
+
+}
+
+
+function cloneObj(obj)
+{
+    return JSON.parse(JSON.stringify(obj));
+}
+
+
 // Highest level function for plot 
 function plots(inputObj,options)
 {
+    activePlotIndex=0;
+    plotArray = []; // Erase past data 
+    plotOptions = options;
     var objTypes = parse_data_obj(inputObj);
     prep_plot_data(inputObj,objTypes);
     //handle_plot_bounds(inputObj,objTypes);
-    plotArray = packageData(inputObj,objTypes,options);
-    create_graph(options);
+    parseOptions();
+    packageData(inputObj,objTypes);
+    create_graph();
 }
-module.exports = plots;
+Plots.create = plots;
+
+
+function add_plot(inputObj,options)
+{
+    activePlotIndex++;
+    plotOptions = options;
+    var objTypes = parse_data_obj(inputObj);
+    prep_plot_data(inputObj,objTypes);
+    //handle_plot_bounds(inputObj,objTypes);
+    parseOptions();
+    packageData(inputObj,objTypes);
+    create_graph();
+}
+Plots.add = add_plot;
+
+
+module.exports = Plots;
 
 function extendUpperBound(bound)
 {
@@ -89,7 +137,7 @@ function parse_data_obj(inputObj)
     }
     else if(Array.isArray(inputObj))
     {
-        var numMatrixs = x.filter(function(value){ return (value instanceof matrix)}).length;
+        var numMatrixs = inputObj.filter(function(value){ return (value instanceof matrix)}).length;
         if(numMatrixs==0)
         {
             objType = 'Single Matrixs';
@@ -127,6 +175,8 @@ function prep_plot_data(dataObj,objType)
     }
 }
 
+
+/*
 function handle_plot_bounds(dataObj,objType)
 {
 
@@ -170,14 +220,23 @@ function handle_plot_bounds(dataObj,objType)
         
     }  
 }
+*/
+
+function getColorArray(localObj)
+{
+    var dataSize = localObj.x.length;
+    var M = Matrixs.range(dataSize).flatten();  
+    
+    return M;
+}
 
 
 // This function preps data for FLOTR2
-function packageData(dataObj,objType,options)
+function packageData(dataObj,objType)
 {
     // It is assumed that datOBj is in a array; 
     var localData = null; 
-    var plotDataArray = [];
+
     if(objType == 'Single Matrixs')
     {
         var localObj = {};
@@ -197,49 +256,126 @@ function packageData(dataObj,objType,options)
         if(dimensions==1)
         {
             var A = matrix.range(points);
-            localObj.x = A.flatten();
-            
-            localObj.y = localData.flatten(); 
-
-            if((typeof options) != 'undefined')
-            {
-                if((typeof options.type) != 'undefined')
-                {
-                    localObj.type = options.type;
-                    if(options.type=='scatter')
-                    {
-                        localObj.mode =  'markers'; 
-                    }
-                    else
-                    {
-                        localObj.mode =  'lines';
-                    }
-
-                }
-                localObj.marker = {}; 
-                
-                if((typeof options.color) == 'undefined')
-                {
-                    localObj.marker.color = options.color;
-                    localObj.marker.size = 20; 
-                }
-                else
-                {
-                    localObj.marker.color ='rbga(200,100,0,0.4)';
-                    localObj.marker.size = 20;
-                }
-
-            }
+            plotArray[activePlotIndex].x = A.flatten();
+            plotArray[activePlotIndex].y = localData.flatten();
 
         }
         else // Assumes in proper format already
         {
              localObj.data = localData.value; 
         }
-        plotDataArray.push(localObj);
     }
-    return plotDataArray;
+    else
+    {
+        plotArray[activePlotIndex].x = dataObj[0].flatten();
+        plotArray[activePlotIndex].y = dataObj[1].flatten();
+
+        if((typeof dataObj[2]) !='undefined')
+        {
+            plotArray[activePlotIndex].type = 'scatter3d';
+            plotArray[activePlotIndex].z = dataObj[2].flatten();
+        }
+
+    }
+    var points = plotArray[activePlotIndex].x.length; 
+
+    if((plotOptions.color == null) && (plotOptions.type=='scatter'))
+    {
+        plotArray[activePlotIndex].marker.color = plotArray[activePlotIndex].x;
+    }
+
+     if(plotOptions.type=='scatter')
+    {
+        var markerSize = plotArray[activePlotIndex].marker.size; 
+        plotArray[activePlotIndex].marker.size = Matrixs.zeros(points).add(markerSize).flatten();
+    }
+
+
+    
+
 }
+
+function parseOptions()
+{
+    var plotType = 'lines';
+    if((typeof plotOptions) == 'undefined')
+    {
+        plotArray[activePlotIndex] = cloneObj(defaultLineObj);
+        plotOptions = {};
+    }
+
+    if((typeof plotOptions.type) != 'undefined')
+    {
+        if(plotOptions.type=='scatter')
+        {
+            plotType = 'scatter';
+            plotArray[activePlotIndex] = cloneObj(defaultScatterObj);
+        }
+        else
+        {
+            plotArray[activePlotIndex] = cloneObj(defaultLineObj);
+        }
+    }
+    else
+    {
+        plotOptions.type ='line';
+        plotArray[activePlotIndex] = cloneObj(defaultLineObj);
+    }  
+
+    if((typeof plotOptions.color) != 'undefined')
+    {
+        if((plotType == 'scatter'))
+        {
+            plotArray[activePlotIndex].marker.color = plotOptions.color;
+        }
+        else
+        {
+            plotArray[activePlotIndex].line.color = plotOptions.color;
+        }  
+    }
+    else
+    {
+        plotOptions.color = null; 
+    }
+    
+
+    if((typeof plotOptions.opacity) != 'undefined')
+    {
+        if((plotType == 'scatter'))
+        {
+            plotArray[activePlotIndex].marker.opacity = plotOptions.opacity;
+        }
+        else
+        {
+             plotArray[activePlotIndex].opacity = plotOptions.opacity;
+        }  
+    }
+    else
+    {
+        plotOptions.opacity = null; 
+    }
+
+    if((typeof plotOptions.size) != 'undefined')
+    {
+        if((plotType == 'scatter'))
+        {
+            plotArray[activePlotIndex].marker.size = plotOptions.size;
+        }
+        else
+        {
+            plotArray[activePlotIndex].line.width =  plotOptions.size;
+        }  
+    }
+
+    if((typeof plotOptions.colorscale) != 'undefined')
+    {
+         plotArray[activePlotIndex].marker.colorscale = plotOptions.colorscale;
+    }
+   
+
+
+}
+
 
 function createPlotDiv()
 {
@@ -252,7 +388,8 @@ function createPlotDiv()
         document.getElementsByTagName('body')[0].appendChild(iDiv);
 }
 
-function create_graph(options)
+
+function create_graph()
 {
     if((typeof Ploty) == 'undefined')
     {
@@ -263,97 +400,6 @@ function create_graph(options)
     {
         createPlotDiv();
     }
-     graph = Plotly.newPlot('plotDiv', plotArray,layout,{displayModeBar: false});
+    Plotly.purge('plotDiv');
+    graph = Plotly.newPlot('plotDiv', plotArray,layout,{displayModeBar: false});
 }
-
-
-function testPlotly()
-{
-    createPlotDiv();
-    var trace1 = {
-    x: [1, 2, 3, 4],
-    y: [10, 15, 13, 17],
-    mode: 'markers',
-    type: 'scatter'
-    };
-
-    var trace2 = {
-    x: [2, 3, 4, 5],
-    y: [16, 5, 11, 9],
-    mode: 'lines',
-    type: 'scatter'
-    };
-
-    var trace3 = {
-    x: [1, 2, 3, 4],
-    y: [12, 9, 15, 12],
-    mode: 'lines+markers',
-    type: 'scatter'
-    };
-
-    var data = [trace1, trace2, trace3];
-    Plotly.newPlot('plotDiv', data,{title:'uSuck'},{displayModeBar: false});
-
-}
-
-
-//testPlotly();
-
-
-/*
-function matrix_plot(args1,options)
-{
-    var plotArray = [];
-    
-    if(isMatrixs(args1)) // put into array if matrixs
-    {
-        args1 = [args1];
-    }
-    
-    for(var w = 0; w < args1.length; w++)
-    {
-        var arg1 = args1[w].value;
-        var M = [];
-        var minVal = getMinOfArray(arg1);
-        var maxVal = getMaxOfArray(arg1);
-        var plotObj = {};
-        plotOptions.shadowSize = 0;
-        plotOptions.HtmlText = true; 
-    
-        
-
-        
-        for(var i = 0; i < arg1.length; i++)
-        {
-            M[i] = [i,arg1[i][0]];
-        }
-        
-
-        plotOptions.data = M;
-        
-    
-        
-        if((typeof args1[w].plotType)=='undefined')
-        {
-            plotObj.color = plotColorArrayScatter[w];
-            plotObj.lines ={show:false};
-            plotObj.points ={
-                show:true,
-                fillColor: plotColorArrayScatter[w],
-                radius:20,
-                lineWidth: 1,
-                fillOpacity:0.1,
-            };
-        }
-        else
-        {
-            plotObj.color = plotColorArrayLine[w];
-        }
-        plotArray.push(plotObj)
-    }
-    
-    graph = Flotr.draw(plotDiv, plotArray, plotOptions );
-
-}
-*/
-

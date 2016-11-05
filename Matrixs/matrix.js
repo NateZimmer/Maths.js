@@ -20,5 +20,6 @@ require('./bound');
 require('./delete');
 require('./random');
 require('./flatten');
+require('./pow');
 
 Matrixs = require('./matrixs');

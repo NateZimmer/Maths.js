@@ -7,9 +7,17 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
 */ 
 
 var matrix = require('./matrixs');
+require('./stats');
+
 
 function matrix_rand(m,n)
 {
+
+    if((typeof n) == 'undefined')
+    {
+        n = 1; 
+    }
+
     var M = [];
     
     for(var i = 0 ; i <m; i++)
@@ -24,6 +32,7 @@ function matrix_rand(m,n)
     return M;
 }
 	
+
 //http://stackoverflow.com/questions/25582882/javascript-math-random-normal-distribution-gaussian-bell-curve
 function randn()
 {
@@ -36,6 +45,11 @@ function matrix_randn(m,n)
 {
     var M = [];
     
+    if((typeof n) == 'undefined')
+    {
+        n = 1; 
+    }
+
     for(var i = 0 ; i <m; i++)
     {
         M[i] = [];
@@ -47,7 +61,51 @@ function matrix_randn(m,n)
     
     return M;
 }
-	
+
+function addNoise(A,noiseLevel)
+{
+    var M = [];
+    var maxValue = matrix.make(A).max();
+
+    for(var i = 0; i < A.length; i++)
+    {
+        M[i] = [];
+        for(var j = 0; j < A[0].length; j++)
+        {
+            M[i][j] = A[i][j] +(maxValue*noiseLevel*Math.random() - maxValue*noiseLevel/2);
+        }
+    }
+    return M;
+}
+
+function addNormalNoise(A,noiseLevel)
+{
+    var M = [];
+    var maxValue = matrix.make(A).max();
+
+    for(var i = 0; i < A.length; i++)
+    {
+        M[i] = [];
+        for(var j = 0; j < A[0].length; j++)
+        {
+            M[i][j] = A[i][j] +(maxValue*noiseLevel*randn() - maxValue*noiseLevel/2);
+        }
+    }
+    return M;
+}
+
+
+//Add to parent class 
+matrix.prototype.addNoise = function(noiseLevel)
+{
+    return matrix.make(addNoise(this.value,noiseLevel));
+};
+
+matrix.prototype.addNormalNoise = function(noiseLevel)
+{
+    return matrix.make(addNormalNoise(this.value,noiseLevel));
+};
+
 
 //Add to parent class 
 matrix.rand = function(m,n)
@@ -55,7 +113,10 @@ matrix.rand = function(m,n)
     return matrix.make(matrix_rand(m,n));
 }
 
-
+matrix.random = function(m,n)
+{
+    return matrix.make(matrix_rand(m,n));
+}
 
 //Add to parent class 
 matrix.randn = function(m,n)
