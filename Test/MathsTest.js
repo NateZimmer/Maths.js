@@ -285,6 +285,70 @@ addTest({
 	expectedVal : [[0,0],[0,0],[0,0],[0,0]],
 });
 
+addTest({
+	testName: 'Matrix fill',
+	testString: '\
+	var A = Matrixs.range(8);\
+	A= Matrixs.fill(A,2,4)',
+	expectedVal : [[0,1,2,3],[4,5,6,7]],
+});
+
+addTest({
+	testName: 'Matrix fill2',
+	testString: '\
+	var A = Matrixs.range(8);\
+	A= A.fill(4,2)',
+	expectedVal : [[0,1],[2,3],[4,5],[6,7]],
+});
+
+addTest({
+	testName: 'Matrix apply',
+	testString: '\
+	var A = Matrixs.make([[0,1],[2,3]]);\
+	var cosFnc = function(x){return Math.cos(x)};\
+	A= A.apply(cosFnc).round(3)',
+	expectedVal : [[1,0.54],[-0.416,-0.99]],
+});
+
+addTest({
+	testName: 'Plot Test ',
+	testString: '\
+	var X = Matrixs.range(100).addNoise(0.9);\
+	var Y = X.multiply(4).add(-20);\
+	Plots.create([Y],{type:"scatter",div:"aPlotDiv"});\
+	var A=[[1]];',
+	expectedVal : [[1]],
+	div:'aPlotDiv',
+});
+
+addTest({
+	testName: 'Divide Test',
+	testString: '\
+	var A = Matrixs.make([1,1]);\
+	var B = Matrixs.make([4,2]);\
+	var A = Matrixs.divide(A,B);',
+	expectedVal : [[0.25,0.5]],
+});
+
+
+addTest({
+	testName: 'Neural Net Test',
+	testString: '\
+	var xx = new Models.neuralNet();\
+	xx.setInputNumber(2);\
+	xx.setLayerSizes([4]);\
+	xx.setOutputNumber(1);\
+	xx.init();\
+	var inputs = [[0,0],[0,1],[1,0],[1,1]];\
+	var outputs = [[0],[1],[1],[0]];\
+	var inputObjs = {input:inputs,output:outputs};\
+	var resultObj = Solvers.levenbergMarquardt(inputObjs,xx);\
+	var timeEnd = Date.now();\
+	A = Matrixs.make(xx.fnc(inputs)).round(1);',
+	expectedVal : [[0],[1],[1],[0]],
+});
+
+
 
 function executeUnitTests()
 {
@@ -332,20 +396,34 @@ executeUnitTests();
 
 function runTest(testObj)
 {
-	eval(testObj.testString);
-	if(A.value.equals(testObj.expectedVal))
+	
+	if((typeof testObj.div) == 'undefined')
 	{
-		testObj.testPassed = true; 
+		eval(testObj.testString);
+
+		if(A.value.equals(testObj.expectedVal))
+		{
+			testObj.testPassed = true; 
+		}
+		else
+		{
+			testObj.testPassed = false; 
+		}
+		testObj.calcText = A.print().replace(/(?:\r\n|\r|\n)/g, '<br />');
+		
+		var B = new Matrixs(testObj.expectedVal);
+		testObj.resultText = B.print().replace(/(?:\r\n|\r|\n)/g, '<br />');
+
 	}
 	else
 	{
-		testObj.testPassed = false; 
+		testObj.calcText ='';
+		testObj.resultText = '';
+		testObj.testPassed = true;
+
 	}
 	
-	testObj.calcText = A.print().replace(/(?:\r\n|\r|\n)/g, '<br />');;
 	
-	var B = new Matrixs(testObj.expectedVal);
-	testObj.resultText = B.print().replace(/(?:\r\n|\r|\n)/g, '<br />');;
 	createTestDiv(testObj);
 	return testObj.testPassed;
 }
@@ -370,6 +448,12 @@ function createTestDiv(testObj)
 	{
 		iDiv.innerHTML+='</br><b>Note: </b>'+testObj.note+'</br>'
 	}
+
+	if((typeof testObj.div) != 'undefined')
+	{
+		iDiv.innerHTML+='<div id="'+testObj.div+'" style=" width:500px; height:250px; display:block;"></div>'
+	}
+
 	
 	if(testObj.testPassed)
 	{
@@ -383,7 +467,13 @@ function createTestDiv(testObj)
 		iDiv.style.backgroundColor = 'rgba(255,0,0,0.1)';
 		iDiv.style.boxShadow = '0px 0px 10px rgba(255,0,0,0.5)';
 	}
-
 	$('#content')[0].appendChild(iDiv);	
+
+	if((typeof testObj.div) != 'undefined')
+	{
+		eval(testObj.testString);
+	}
+
+
 }
 

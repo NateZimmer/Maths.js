@@ -222,14 +222,24 @@ module.exports.getScalar = getScalar;
 function matrix_copy(M)
 {
     var M_Array = [];
-    if(typeof M[0] != 'undefined')
+    if(typeof M[0] != 'undefined') 
     {
-        for(var i = 0; i < M.length ; i++)
+        if((typeof M[0][0]) !='undefined') // 2D Copy 
         {
-            M_Array[i] = [];
-            for(var j = 0; j < M[0].length ; j++)
+            for(var i = 0; i < M.length ; i++)
             {
-                M_Array[i].push(M[i][j]);
+                M_Array[i] = [];
+                for(var j = 0; j < M[0].length ; j++)
+                {
+                    M_Array[i].push(M[i][j].valueOf());
+                }
+            }
+        }
+        else //Is 1D 
+        {
+            for(var i = 0; i < M.length ; i++)
+            {
+                M_Array[i] = M[i].valueOf();
             }
         }
     }

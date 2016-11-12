@@ -8,12 +8,14 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
 
 require('../Matrixs/matrix');
 require('../Models/models');
+var u = require('../Matrixs/mUtils');
 var comLib = require('./common'); 
+
 
 function levenberg_marquardt(dataObj,modelObj,options)
 {
     var resultObj = {};
-    resultObj.itterationValues = [modelObj.param.slice()]; // This is the initial guess 
+    resultObj.itterationValues = [u.matrix_copy(modelObj.param)]; // This is the initial guess 
     var r = comLib.get_residuals(dataObj,modelObj); // initial error 
     resultObj.itterationCost = [r.rms()]; // inital cost 
     var currCost = r.rms();
@@ -26,7 +28,9 @@ function levenberg_marquardt(dataObj,modelObj,options)
         var J = comLib.get_jacobian(dataObj.input,modelObj);	
         
         var H = J.transpose().multiply(J);
-        var step = H.add(H.diag().multiply(lamda)).invert().multiply(J.transpose()).multiply(r);
+        //var stepPart = H.add(H.diag().multiply(lamda))
+        var stepPart = H.add( Matrixs.ident(H.value.length , H.value.length).multiply(lamda) );
+        var step = stepPart.pinv().multiply(J.transpose()).multiply(r);
         // step =  (H + lamda * diag(H))^(-1) * J^T * r // levenberg step 
 
         modelObj.param = Matrixs.subtract(modelObj.param, step.unroll()).unroll(); // Apply step, Update model coieficents
@@ -37,7 +41,7 @@ function levenberg_marquardt(dataObj,modelObj,options)
         if (newCost > currCost) // Was it a bad step? 
         {
             lamda *= 10; // Dampen step 
-            modelObj.param = resultObj.itterationValues[i].slice(); // Revert to old model parameters   
+            modelObj.param = u.matrix_copy(resultObj.itterationValues[i]); // Revert to old model parameters   
         }
         else // Was a good step 
         {
@@ -45,9 +49,9 @@ function levenberg_marquardt(dataObj,modelObj,options)
             lamda *= 0.1;  
         } 
 
-        resultObj.itterationValues[i+1] = modelObj.param.slice(); //Store record of model coieficents
+        resultObj.itterationValues[i+1] = u.matrix_copy(modelObj.param); //Store record of model coieficents
         
-        if(comLib.hasConverged(resultObj.itterationCost)) //check for convergence 
+        if(comLib.hasConverged(resultObj.itterationCost,resultObj.itterationValues )) //check for convergence 
         {
             resultObj.convergence = true; 
             break; 
@@ -55,7 +59,7 @@ function levenberg_marquardt(dataObj,modelObj,options)
 
     }
 
-    resultObj.solution = modelObj.param.slice(); 
+    resultObj.solution = u.matrix_copy(modelObj.param); 
     return resultObj;
 }
 module.exports = levenberg_marquardt; 

@@ -25,12 +25,29 @@ function get_residuals(dataObj,modelObj)
     return r; 
 }
 
-function hasConverged(costArray)
+function hasConverged(costArray,ittValues)
 {
     var hasConverged = false; 
     var newCost = costArray[costArray.length-1];
     var oldCost = costArray[costArray.length-2];
     var change = Math.abs(newCost - oldCost); 
+    
+    if(newCost<0.001)
+    {
+        hasConverged = true;
+    }
+    else if((typeof ittValues) != 'undefined')
+    {
+        var newCost = Matrixs.make(ittValues[ittValues.length-1]);
+        var oldCost = Matrixs.make(ittValues[ittValues.length-2]);
+        var change = newCost.subtract(oldCost).rms(); 
+        if(change < 0.001) // trust region expanding 
+        {
+             hasConverged = false;
+             return hasConverged;
+        }
+    }
+    
     if(change < 0.001)
     {
         hasConverged = true;

@@ -11,11 +11,13 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
 var eps = 1e-8;
 
 require('../Matrixs/matrix');
+var u = require('../Matrixs/mUtils');
+
 
 function numJacobian(X,modelObj)
 {
     var J = [];
-    var currParam = modelObj.param.slice();
+    var currParam = modelObj.param.slice(0);
     var currX = modelObj.fnc(X);
     
     for(var j =0; j < modelObj.param.length; j++)
@@ -28,7 +30,7 @@ function numJacobian(X,modelObj)
             var oldX = currX[i][0];
             J[j][i] = (newX - oldX)/eps;    
         }
-        modelObj.param = currParam;
+        modelObj.param = currParam.slice(0);
     }
     return Matrixs.transpose(J);
 }

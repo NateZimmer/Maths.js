@@ -71,7 +71,49 @@ matrix.prototype.add = function(x)
 };
 
 
-},{"./mUtils":8,"./matrixs":10}],2:[function(require,module,exports){
+},{"./mUtils":11,"./matrixs":13}],2:[function(require,module,exports){
+/*
+MIT License (MIT)
+Copyright (c) 2016 Nathan Zimmerman
+Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the "Software"), to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies of the Software, and to permit persons to whom the Software is furnished to do so, subject to the following conditions:
+The above copyright notice and this permission notice shall be included in all copies or substantial portions of the Software.
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+*/ 
+
+var matrix = require('./matrixs');
+
+// applies a function to every element of a matrix
+function matrix_apply(A,fnc)
+{
+    var M = [];
+    for(var i = 0 ; i < A.length; i++)
+    {
+        M[i] = [];
+        for(var j = 0; j<A[0].length; j++)
+        {
+            M[i][j] = fnc(A[i][j]);
+        }
+    }
+    return M;
+}
+
+//Add to parent class 
+matrix.prototype.apply = function(fnc)
+{
+    if((typeof fnc) != 'function')
+    {
+        throw 'Must apply a function';
+    }
+    var M = matrix.make(matrix_apply(this.value,fnc));
+    return M;
+};
+
+//Add to parent class 
+matrix.apply = function(A,fnc)
+{
+    return matrix.make(A).apply(fnc);
+}
+},{"./matrixs":13}],3:[function(require,module,exports){
 /*
 MIT License (MIT)
 Copyright (c) 2016 Nathan Zimatrix.makeerman
@@ -109,7 +151,7 @@ matrix.checkBounds = function(A,lb,ub)
 {
     return matrix.make(A).checkBounds(lb,ub);
 }
-},{"./matrixs":10}],3:[function(require,module,exports){
+},{"./matrixs":13}],4:[function(require,module,exports){
 /*
 MIT License (MIT)
 Copyright (c) 2016 Nathan Zimmerman
@@ -239,7 +281,7 @@ matrix.zeros = function(m,n)
 {
     return matrix.make(matrix_zeros(m,n));
 }
-},{"./mUtils":8,"./matrixs":10}],4:[function(require,module,exports){
+},{"./mUtils":11,"./matrixs":13}],5:[function(require,module,exports){
 /*
 MIT License (MIT)
 Copyright (c) 2016 Nathan Zimatrix.makeerman
@@ -302,7 +344,7 @@ matrix.deleteCol = function(A,colNum)
 {
     return matrix.make(A).deleteCol(colNum);
 }
-},{"./mUtils":8,"./matrixs":10}],5:[function(require,module,exports){
+},{"./mUtils":11,"./matrixs":13}],6:[function(require,module,exports){
 /*
 MIT License (MIT)
 Copyright (c) 2016 Nathan Zimmerman
@@ -343,7 +385,115 @@ matrix.diag = function(A)
 {
     return matrix.make(A).diag();
 }
-},{"./matrixs":10}],6:[function(require,module,exports){
+},{"./matrixs":13}],7:[function(require,module,exports){
+/*
+MIT License (MIT)
+Copyright (c) 2016 Nathan Zimmerman
+Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the "Software"), to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies of the Software, and to permit persons to whom the Software is furnished to do so, subject to the following conditions:
+The above copyright notice and this permission notice shall be included in all copies or substantial portions of the Software.
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+*/ 
+
+var matrix = require('./matrixs');
+require('./shape');
+
+//Returns the diagonal elements of a matrix; 
+function matrix_element_divide(A,B){
+
+    var M = []; 
+
+    for(var i=0; i<A.length;i++)
+    {
+        M[i] = [];
+        for(var j = 0; j <A[0].length; j++)
+        {
+            M[i][j] =  A[i][j]/B[i][j]; 
+        }
+    }
+    return M;
+}
+
+
+//Add to parent class 
+matrix.prototype.divide = function(B)
+{
+
+    var shapeA = this.shape();
+    var shapeB = B.shape();
+    var M = [];
+
+    if(shapeA.equals(shapeB))
+    {
+        M = matrix_element_divide(this.value,B.value);
+    }
+    else
+    {
+        throw 'element wise division is currently only supported. Matricies must be same shape' 
+    } 
+
+    return matrix.make(M);
+};
+
+
+//Add to parent class 
+matrix.divide = function(A,B)
+{
+    return matrix.make(A).divide(Matrixs.make(B));
+}
+},{"./matrixs":13,"./shape":18}],8:[function(require,module,exports){
+/*
+MIT License (MIT)
+Copyright (c) 2016 Nathan Zimmerman
+Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the "Software"), to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies of the Software, and to permit persons to whom the Software is furnished to do so, subject to the following conditions:
+The above copyright notice and this permission notice shall be included in all copies or substantial portions of the Software.
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+*/ 
+
+var matrix = require('./matrixs');
+require('./transpose');
+
+// Changes from 1D to 2D: 
+function matrix_fill(M,m,n)
+{
+    var mElements = M.length * M[0].length;
+    var outElements = m*n;
+    var fill = [];
+    var v = 0;
+    if(mElements != outElements)
+    {
+        throw 'Invalid Fill container';
+    }
+
+    for(var i = 0; i < m; i++)
+    {
+        fill[i] = [];
+        for(var j = 0; j < n; j++ )
+        {
+            fill[i][j] = M[0][v];
+            v++;  
+        }
+    }
+    return fill; 
+}
+
+//Add to parent class 
+matrix.prototype.fill = function(m,n)
+{
+    if(this.value.length>this.value[0].length) // If is column vector, transpose it. 
+    {
+        this.value = this.transpose().value;
+    }
+
+    var M = matrix_fill(this.value,m,n);
+    return matrix.make(M);
+};
+
+//Add to parent class 
+matrix.fill = function(A,m,n)
+{
+    return matrix.make(A).fill(m,n);
+}
+},{"./matrixs":13,"./transpose":21}],9:[function(require,module,exports){
 /*
 MIT License (MIT)
 Copyright (c) 2016 Nathan Zimmerman
@@ -372,7 +522,7 @@ matrix.flatten = function(A)
 {
     return matrix.make(A).flatten();
 }
-},{"./matrixs":10}],7:[function(require,module,exports){
+},{"./matrixs":13}],10:[function(require,module,exports){
 /*
 MIT License (MIT)
 Copyright (c) 2016 Nathan Zimmerman
@@ -497,7 +647,363 @@ matrix.invert = function(A)
 {
     return new matrix(matrix_invert(matrix.make(A).value));
 }
-},{"./mUtils":8,"./matrixs":10}],8:[function(require,module,exports){
+
+
+var localEps = 2.220446049250313e-16;
+
+function pinv(A) {
+  var z = svd(A), foo = z.S[0];
+  var U = z.U, S = z.S, V = z.V;
+  var m = A.length, n = A[0].length, tol = Math.max(m,n)*localEps*foo,M = S.length;
+  var i,Sinv = new Array(M);
+  for(i=M-1;i!==-1;i--) { if(S[i]>tol) Sinv[i] = 1/S[i]; else Sinv[i] = 0; }
+  //return numeric.dot(numeric.dot(V,numeric.diag(Sinv)),numeric.transpose(U))
+
+  var SinvM = []; 
+  for(var i = 0; i < Sinv.length; i++)
+  {
+	  SinvM[i] = [];
+	  for(var j = 0; j < Sinv.length; j++)
+	  {
+		  var sinvVal = (i==j) ? Sinv[i] : 0;
+		  SinvM[i][j] = sinvVal; 
+	  }
+  }
+  SinvM = matrix.make(SinvM);
+  V = matrix.make(V);
+  U = matrix.make(U);
+  return V.multiply(SinvM).multiply(U.transpose());
+
+}
+
+matrix.prototype.pinv = function()
+{
+    var M = pinv(this.value);
+    return matrix.make(M);
+};
+
+matrix.pinv = function(A)
+{
+    return new matrix(pinv(matrix.make(A).value));
+}
+
+
+function rep(s,v,k) {
+    if(typeof k === "undefined") { k=0; }
+    var n = s[k], ret = Array(n), i;
+    if(k === s.length-1) {
+        for(i=n-2;i>=0;i-=2) { ret[i+1] = v; ret[i] = v; }
+        if(i===-1) { ret[0] = v; }
+        return ret;
+    }
+    for(i=n-1;i>=0;i--) { ret[i] = rep(s,v,k+1); }
+    return ret;
+}
+
+
+//Source:Numerics library
+//Taken from https://github.com/sloisel/numeric/blob/master/src/svd.js.
+//Left as is except for small modificaitons.  
+
+//Shanti Rao sent me this routine by private email. I had to modify it
+//slightly to work on Arrays instead of using a Matrix object.
+//It is apparently translated from http://stitchpanorama.sourceforge.net/Python/svd.py
+
+
+function svd(A) {
+    var temp;
+//Compute the thin SVD from G. H. Golub and C. Reinsch, Numer. Math. 14, 403-420 (1970)
+	//var prec= numeric.epsilon; //Math.pow(2,-52) // assumes double prec
+	var prec = 2.220446049250313e-16;
+    var tolerance= 1.e-64/prec;
+	var itmax= 50;
+	var c=0;
+	var i=0;
+	var j=0;
+	var k=0;
+	var l=0;
+	
+	//var u= numeric.clone(A);
+	var u = U.matrix_copy(A);
+
+    var m= u.length;
+	
+	var n= u[0].length;
+	
+	if (m < n) throw "Need more rows than columns"
+	
+	var e = new Array(n);
+	var q = new Array(n);
+	for (i=0; i<n; i++) e[i] = q[i] = 0.0;
+	var v = rep([n,n],0);
+//	v.zero();
+	
+ 	function pythag(a,b)
+ 	{
+		a = Math.abs(a)
+		b = Math.abs(b)
+		if (a > b)
+			return a*Math.sqrt(1.0+(b*b/a/a))
+		else if (b == 0.0) 
+			return a
+		return b*Math.sqrt(1.0+(a*a/b/b))
+	}
+
+	//Householder's reduction to bidiagonal form
+
+	var f= 0.0;
+	var g= 0.0;
+	var h= 0.0;
+	var x= 0.0;
+	var y= 0.0;
+	var z= 0.0;
+	var s= 0.0;
+	
+	for (i=0; i < n; i++)
+	{	
+		e[i]= g;
+		s= 0.0;
+		l= i+1;
+		for (j=i; j < m; j++) 
+			s += (u[j][i]*u[j][i]);
+		if (s <= tolerance)
+			g= 0.0;
+		else
+		{	
+			f= u[i][i];
+			g= Math.sqrt(s);
+			if (f >= 0.0) g= -g;
+			h= f*g-s
+			u[i][i]=f-g;
+			for (j=l; j < n; j++)
+			{
+				s= 0.0
+				for (k=i; k < m; k++) 
+					s += u[k][i]*u[k][j]
+				f= s/h
+				for (k=i; k < m; k++) 
+					u[k][j]+=f*u[k][i]
+			}
+		}
+		q[i]= g
+		s= 0.0
+		for (j=l; j < n; j++) 
+			s= s + u[i][j]*u[i][j]
+		if (s <= tolerance)
+			g= 0.0
+		else
+		{	
+			f= u[i][i+1]
+			g= Math.sqrt(s)
+			if (f >= 0.0) g= -g
+			h= f*g - s
+			u[i][i+1] = f-g;
+			for (j=l; j < n; j++) e[j]= u[i][j]/h
+			for (j=l; j < m; j++)
+			{	
+				s=0.0
+				for (k=l; k < n; k++) 
+					s += (u[j][k]*u[i][k])
+				for (k=l; k < n; k++) 
+					u[j][k]+=s*e[k]
+			}	
+		}
+		y= Math.abs(q[i])+Math.abs(e[i])
+		if (y>x) 
+			x=y
+	}
+	
+	// accumulation of right hand gtransformations
+	for (i=n-1; i != -1; i+= -1)
+	{	
+		if (g != 0.0)
+		{
+		 	h= g*u[i][i+1]
+			for (j=l; j < n; j++) 
+				v[j][i]=u[i][j]/h
+			for (j=l; j < n; j++)
+			{	
+				s=0.0
+				for (k=l; k < n; k++) 
+					s += u[i][k]*v[k][j]
+				for (k=l; k < n; k++) 
+					v[k][j]+=(s*v[k][i])
+			}	
+		}
+		for (j=l; j < n; j++)
+		{
+			v[i][j] = 0;
+			v[j][i] = 0;
+		}
+		v[i][i] = 1;
+		g= e[i]
+		l= i
+	}
+	
+	// accumulation of left hand transformations
+	for (i=n-1; i != -1; i+= -1)
+	{	
+		l= i+1
+		g= q[i]
+		for (j=l; j < n; j++) 
+			u[i][j] = 0;
+		if (g != 0.0)
+		{
+			h= u[i][i]*g
+			for (j=l; j < n; j++)
+			{
+				s=0.0
+				for (k=l; k < m; k++) s += u[k][i]*u[k][j];
+				f= s/h
+				for (k=i; k < m; k++) u[k][j]+=f*u[k][i];
+			}
+			for (j=i; j < m; j++) u[j][i] = u[j][i]/g;
+		}
+		else
+			for (j=i; j < m; j++) u[j][i] = 0;
+		u[i][i] += 1;
+	}
+	
+	// diagonalization of the bidiagonal form
+	prec= prec*x
+	for (k=n-1; k != -1; k+= -1)
+	{
+		for (var iteration=0; iteration < itmax; iteration++)
+		{	// test f splitting
+			var test_convergence = false
+			for (l=k; l != -1; l+= -1)
+			{	
+				if (Math.abs(e[l]) <= prec)
+				{	test_convergence= true
+					break 
+				}
+				if (Math.abs(q[l-1]) <= prec)
+					break 
+			}
+			if (!test_convergence)
+			{	// cancellation of e[l] if l>0
+				c= 0.0
+				s= 1.0
+				var l1= l-1
+				for (i =l; i<k+1; i++)
+				{	
+					f= s*e[i]
+					e[i]= c*e[i]
+					if (Math.abs(f) <= prec)
+						break
+					g= q[i]
+					h= pythag(f,g)
+					q[i]= h
+					c= g/h
+					s= -f/h
+					for (j=0; j < m; j++)
+					{	
+						y= u[j][l1]
+						z= u[j][i]
+						u[j][l1] =  y*c+(z*s)
+						u[j][i] = -y*s+(z*c)
+					} 
+				}	
+			}
+			// test f convergence
+			z= q[k]
+			if (l== k)
+			{	//convergence
+				if (z<0.0)
+				{	//q[k] is made non-negative
+					q[k]= -z
+					for (j=0; j < n; j++)
+						v[j][k] = -v[j][k]
+				}
+				break  //break out of iteration loop and move on to next k value
+			}
+			if (iteration >= itmax-1)
+				throw 'Error: no convergence.'
+			// shift from bottom 2x2 minor
+			x= q[l]
+			y= q[k-1]
+			g= e[k-1]
+			h= e[k]
+			f= ((y-z)*(y+z)+(g-h)*(g+h))/(2.0*h*y)
+			g= pythag(f,1.0)
+			if (f < 0.0)
+				f= ((x-z)*(x+z)+h*(y/(f-g)-h))/x
+			else
+				f= ((x-z)*(x+z)+h*(y/(f+g)-h))/x
+			// next QR transformation
+			c= 1.0
+			s= 1.0
+			for (i=l+1; i< k+1; i++)
+			{	
+				g= e[i]
+				y= q[i]
+				h= s*g
+				g= c*g
+				z= pythag(f,h)
+				e[i-1]= z
+				c= f/z
+				s= h/z
+				f= x*c+g*s
+				g= -x*s+g*c
+				h= y*s
+				y= y*c
+				for (j=0; j < n; j++)
+				{	
+					x= v[j][i-1]
+					z= v[j][i]
+					v[j][i-1] = x*c+z*s
+					v[j][i] = -x*s+z*c
+				}
+				z= pythag(f,h)
+				q[i-1]= z
+				c= f/z
+				s= h/z
+				f= c*g+s*y
+				x= -s*g+c*y
+				for (j=0; j < m; j++)
+				{
+					y= u[j][i-1]
+					z= u[j][i]
+					u[j][i-1] = y*c+z*s
+					u[j][i] = -y*s+z*c
+				}
+			}
+			e[l]= 0.0
+			e[k]= f
+			q[k]= x
+		} 
+	}
+		
+	//vt= transpose(v)
+	//return (u,q,vt)
+	for (i=0;i<q.length; i++) 
+	  if (q[i] < prec) q[i] = 0
+	  
+	//sort eigenvalues	
+	for (i=0; i< n; i++)
+	{	 
+	//writeln(q)
+	 for (j=i-1; j >= 0; j--)
+	 {
+	  if (q[j] < q[i])
+	  {
+	//  writeln(i,'-',j)
+	   c = q[j]
+	   q[j] = q[i]
+	   q[i] = c
+	   for(k=0;k<u.length;k++) { temp = u[k][i]; u[k][i] = u[k][j]; u[k][j] = temp; }
+	   for(k=0;k<v.length;k++) { temp = v[k][i]; v[k][i] = v[k][j]; v[k][j] = temp; }
+//	   u.swapCols(i,j)
+//	   v.swapCols(i,j)
+	   i = j	   
+	  }
+	 }	
+	}
+	
+	return {U:u,S:q,V:v}
+};
+
+},{"./mUtils":11,"./matrixs":13}],11:[function(require,module,exports){
 /*
 MIT License (MIT)
 Copyright (c) 2016 Nathan Zimmerman
@@ -722,21 +1228,31 @@ module.exports.getScalar = getScalar;
 function matrix_copy(M)
 {
     var M_Array = [];
-    if(typeof M[0] != 'undefined')
+    if(typeof M[0] != 'undefined') 
     {
-        for(var i = 0; i < M.length ; i++)
+        if((typeof M[0][0]) !='undefined') // 2D Copy 
         {
-            M_Array[i] = [];
-            for(var j = 0; j < M[0].length ; j++)
+            for(var i = 0; i < M.length ; i++)
             {
-                M_Array[i].push(M[i][j]);
+                M_Array[i] = [];
+                for(var j = 0; j < M[0].length ; j++)
+                {
+                    M_Array[i].push(M[i][j].valueOf());
+                }
+            }
+        }
+        else //Is 1D 
+        {
+            for(var i = 0; i < M.length ; i++)
+            {
+                M_Array[i] = M[i].valueOf();
             }
         }
     }
     return M_Array;
 }
 module.exports.matrix_copy = matrix_copy; 
-},{}],9:[function(require,module,exports){
+},{}],12:[function(require,module,exports){
 /*
 MIT License (MIT)
 Copyright (c) 2016 Nathan Zimmerman
@@ -760,9 +1276,13 @@ require('./delete');
 require('./random');
 require('./flatten');
 require('./pow');
+require('./fill');
+require('./apply');
+require('./divide');
 
 Matrixs = require('./matrixs');
-},{"./add":1,"./bound":2,"./create":3,"./delete":4,"./diag":5,"./flatten":6,"./invert":7,"./matrixs":10,"./multiply":11,"./pow":12,"./print":13,"./random":14,"./shape":15,"./stats":16,"./subtract":17,"./transpose":18}],10:[function(require,module,exports){
+Matrixs.util = require('./mUtils');
+},{"./add":1,"./apply":2,"./bound":3,"./create":4,"./delete":5,"./diag":6,"./divide":7,"./fill":8,"./flatten":9,"./invert":10,"./mUtils":11,"./matrixs":13,"./multiply":14,"./pow":15,"./print":16,"./random":17,"./shape":18,"./stats":19,"./subtract":20,"./transpose":21}],13:[function(require,module,exports){
 /*
 MIT License (MIT)
 Copyright (c) 2016 Nathan Zimmerman
@@ -810,7 +1330,7 @@ matrixs.make = function(M)
 console.log('Loading matrix');
 
 module.exports = matrixs;
-},{"./mUtils":8}],11:[function(require,module,exports){
+},{"./mUtils":11}],14:[function(require,module,exports){
 /*
 MIT License (MIT)
 Copyright (c) 2016 Nathan Zimmerman
@@ -944,7 +1464,7 @@ matrix.multiply = function(A,B)
 }
 
 
-},{"./mUtils":8,"./matrixs":10}],12:[function(require,module,exports){
+},{"./mUtils":11,"./matrixs":13}],15:[function(require,module,exports){
 /*
 MIT License (MIT)
 Copyright (c) 2016 Nathan Zimmerman
@@ -1018,7 +1538,7 @@ matrix.square = function(A,val)
 {
     return matrix.make(A).square(val);
 }
-},{"./matrixs":10}],13:[function(require,module,exports){
+},{"./matrixs":13}],16:[function(require,module,exports){
 /*
 MIT License (MIT)
 Copyright (c) 2016 Nathan Zimmerman
@@ -1065,7 +1585,7 @@ matrix.print = function(M)
     return print_matrix(matrix.make(M).value);
 };
 
-},{"./matrixs":10}],14:[function(require,module,exports){
+},{"./matrixs":13}],17:[function(require,module,exports){
 /*
 MIT License (MIT)
 Copyright (c) 2016 Nathan Zimmerman
@@ -1191,7 +1711,7 @@ matrix.randn = function(m,n)
 {
     return matrix.make(matrix_randn(m,n));
 }
-},{"./matrixs":10,"./stats":16}],15:[function(require,module,exports){
+},{"./matrixs":13,"./stats":19}],18:[function(require,module,exports){
 /*
 MIT License (MIT)
 Copyright (c) 2016 Nathan Zimmerman
@@ -1361,7 +1881,7 @@ matrix.row = function(A,start)
 {
     return new matrix(matrix_get_rows(matrix.make(A).value,start));
 }
-},{"./mUtils":8,"./matrixs":10}],16:[function(require,module,exports){
+},{"./mUtils":11,"./matrixs":13}],19:[function(require,module,exports){
 /*
 MIT License (MIT)
 Copyright (c) 2016 Nathan Zimmerman
@@ -1490,7 +2010,7 @@ matrix.prototype.round = function(d)
     var M = matrix_round(this.value,d);
     return matrix.make(M);
 };
-},{"./mUtils":8,"./matrixs":10}],17:[function(require,module,exports){
+},{"./mUtils":11,"./matrixs":13}],20:[function(require,module,exports){
 /*
 MIT License (MIT)
 Copyright (c) 2016 Nathan Zimmerman
@@ -1548,7 +2068,7 @@ matrix.subtract = function(A,B)
 {
     return new matrix(matrix_subtract(matrix.make(A).value,matrix.make(B).value));
 }
-},{"./add":1,"./mUtils":8,"./matrixs":10}],18:[function(require,module,exports){
+},{"./add":1,"./mUtils":11,"./matrixs":13}],21:[function(require,module,exports){
 /*
 MIT License (MIT)
 Copyright (c) 2016 Nathan Zimmerman
@@ -1591,7 +2111,7 @@ matrix.transpose = function(A)
 {
     return matrix.make(A).transpose();
 }
-},{"./matrixs":10}],19:[function(require,module,exports){
+},{"./matrixs":13}],22:[function(require,module,exports){
 /*
 MIT License (MIT)
 Copyright (c) 2016 Nathan Zimatrix.makeerman
@@ -1605,11 +2125,13 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
 var eps = 1e-8;
 
 require('../Matrixs/matrix');
+var u = require('../Matrixs/mUtils');
+
 
 function numJacobian(X,modelObj)
 {
     var J = [];
-    var currParam = modelObj.param.slice();
+    var currParam = modelObj.param.slice(0);
     var currX = modelObj.fnc(X);
     
     for(var j =0; j < modelObj.param.length; j++)
@@ -1622,13 +2144,13 @@ function numJacobian(X,modelObj)
             var oldX = currX[i][0];
             J[j][i] = (newX - oldX)/eps;    
         }
-        modelObj.param = currParam;
+        modelObj.param = currParam.slice(0);
     }
     return Matrixs.transpose(J);
 }
 
 module.exports = numJacobian; 
-},{"../Matrixs/matrix":9}],20:[function(require,module,exports){
+},{"../Matrixs/mUtils":11,"../Matrixs/matrix":12}],23:[function(require,module,exports){
 /*
 MIT License (MIT)
 Copyright (c) 2016 Nathan Zimmerman
@@ -1670,7 +2192,7 @@ lineObj.prototype.grad = function(x)
 }
 
 module.exports = lineObj;  
-},{}],21:[function(require,module,exports){
+},{}],24:[function(require,module,exports){
 /*
 MIT License (MIT)
 Copyright (c) 2016 Nathan Zimmerman
@@ -1685,8 +2207,122 @@ Models ={};
 Models.line = require('./line');
 Models.power = require('./power');
 Models.jacobian = require('./jacobian');
+Models.neuralNet = require('./neuralNet');
+},{"./jacobian":22,"./line":23,"./neuralNet":25,"./power":26}],25:[function(require,module,exports){
+/*
+MIT License (MIT)
+Copyright (c) 2016 Nathan Zimmerman
+Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the "Software"), to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies of the Software, and to permit persons to whom the Software is furnished to do so, subject to the following conditions:
+The above copyright notice and this permission notice shall be included in all copies or substantial portions of the Software.
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+*/ 
 
-},{"./jacobian":19,"./line":20,"./power":22}],22:[function(require,module,exports){
+var u = require('../Matrixs/mUtils');
+require('../Matrixs/matrix');
+
+
+function nnObj(obj)
+{
+    this.param;// = obj.x; //paramters 
+    this.layerSizes;// = obj.layerSizes; 
+    this.hasBias;// = obj.hasBias; 
+    this.inputs;// = obj.inputs;
+    this.outputs;// = obj.outputs;
+};
+
+var sigmoidFnc = function(x){return 1/(1+Math.exp(-x))}
+
+nnObj.sigmoid = sigmoidFnc; 
+
+nnObj.prototype.numFeatures = function()
+{
+    var numFeatures = 0; 
+    this.createLayerArray();
+    for(var i = 0; i < (this.layerArray.length-1); i++)
+    {
+        numFeatures += (this.layerArray[i]+1)*this.layerArray[i+1];
+    }
+
+    return numFeatures; 
+}
+
+nnObj.prototype.setInputNumber = function(num) 
+{
+    this.inputs = num;
+}
+
+
+nnObj.prototype.setOutputNumber = function(num) 
+{
+    this.outputs = num;
+}
+
+
+nnObj.prototype.setNumberLayers = function(num)
+{
+    this.hiddenLayers = num;
+}
+
+
+nnObj.prototype.setLayerSizes = function(num)
+{
+    this.layerSizes = num;
+} 
+
+nnObj.prototype.createLayerArray = function()
+{
+    this.layerArray = [];
+    this.layerArray.push(this.inputs); // +1 cuz bias 
+    for(var i = 0; i < this.layerSizes.length; i++)
+    {
+        this.layerArray.push(this.layerSizes[i]); // +1 cuz bias 
+    }
+    this.layerArray.push(this.outputs);
+}
+
+nnObj.prototype.randomizeParameters = function()
+{
+    var features = this.numFeatures();
+    this.param = Matrixs.rand(features).multiply(2).subtract(1).flatten();
+}
+
+nnObj.prototype.init = function()
+{
+    this.randomizeParameters();
+}
+
+//Forward propogate through matrix 
+nnObj.prototype.fnc = function(x)
+{
+    var M = []; // Result
+    var paramIndex = 0; 
+    var xLocal = Matrixs.make(x);
+   
+    for(var i = 0; i < (this.layerArray.length-1); i++)
+    {
+        //xLocal = xLocal.catHorizontal(Matrixs.ones(xLocal.value.length),1); // Append Bias array 
+        xLocal = Matrixs.ones(xLocal.value.length,1).catHorizontal(xLocal); // Append Bias array 
+
+
+        var featuresNum = xLocal.value[0].length; // How many features?
+        var nextLayerSize = this.layerArray[i+1]; // Size of next layer? 
+        // Fetch parameters coresponding to that layer
+        var coeficentMatrix = this.param.slice(paramIndex,paramIndex+featuresNum*nextLayerSize);  
+        paramIndex += featuresNum*nextLayerSize; // Update fetching index 
+        coeficentMatrix = Matrixs.fill(coeficentMatrix,featuresNum,nextLayerSize); // Create parameter matrix
+        
+        xLocal = xLocal.multiply(coeficentMatrix); // Multiply prior layer by parameter matrix 
+        xLocal = xLocal.apply(sigmoidFnc); //Apply sigmoid function to result 
+    
+} // itterate until final layer reached 
+    return xLocal.value;
+}
+
+module.exports = nnObj;  
+
+
+
+},{"../Matrixs/mUtils":11,"../Matrixs/matrix":12}],26:[function(require,module,exports){
 /*
 MIT License (MIT)
 Copyright (c) 2016 Nathan Zimmerman
@@ -1728,7 +2364,7 @@ modelObj.prototype.grad = function(x)
 }
 
 module.exports = modelObj;  
-},{}],23:[function(require,module,exports){
+},{}],27:[function(require,module,exports){
 /*
 MIT License (MIT)
 Copyright (c) 2016 Nathan Zimmerman
@@ -1753,13 +2389,26 @@ var plotOptions = {};
 
 Plots ={};
 
-var layout = { 
+plotyLayout = { 
+    paper_bgcolor: 'transparent',
+    plot_bgcolor: 'transparent',
+    color: '#DDD',
     xaxis: {
             fixedrange: true
             },
     yaxis: {
         fixedrange:true,
-    }
+    },
+    height:250,
+    width:500,
+    margin: {
+        l:40,
+        r:5,
+        b:30,
+        t:5,
+        pad:4
+    },
+
 };
 
 
@@ -2023,9 +2672,6 @@ function packageData(dataObj,objType)
         plotArray[activePlotIndex].marker.size = Matrixs.zeros(points).add(markerSize).flatten();
     }
 
-
-    
-
 }
 
 function parseOptions()
@@ -2105,8 +2751,6 @@ function parseOptions()
          plotArray[activePlotIndex].marker.colorscale = plotOptions.colorscale;
     }
    
-
-
 }
 
 
@@ -2129,15 +2773,25 @@ function create_graph()
         var Ploty = {};
     }
 
-    if((document.getElementById('plotDiv')) == null )
+    if(typeof(plotOptions.div) == 'undefined')
     {
-        createPlotDiv();
+            if((document.getElementById('plotDiv')) == null )
+            {
+                createPlotDiv();
+            }
+            Plotly.purge('plotDiv');
+            graph = Plotly.newPlot('plotDiv', plotArray,plotyLayout,{displayModeBar: false});
     }
-    Plotly.purge('plotDiv');
-    graph = Plotly.newPlot('plotDiv', plotArray,layout,{displayModeBar: false});
+    else
+    {
+        Plotly.purge(plotOptions.div);
+        graph = Plotly.newPlot(plotOptions.div, plotArray,plotyLayout,{displayModeBar: false});
+    }
+
+    
 }
 
-},{"../Matrixs/matrix":9,"../Matrixs/matrixs":10}],24:[function(require,module,exports){
+},{"../Matrixs/matrix":12,"../Matrixs/matrixs":13}],28:[function(require,module,exports){
 
 
 require('../Matrixs/matrix');
@@ -2165,12 +2819,29 @@ function get_residuals(dataObj,modelObj)
     return r; 
 }
 
-function hasConverged(costArray)
+function hasConverged(costArray,ittValues)
 {
     var hasConverged = false; 
     var newCost = costArray[costArray.length-1];
     var oldCost = costArray[costArray.length-2];
     var change = Math.abs(newCost - oldCost); 
+    
+    if(newCost<0.001)
+    {
+        hasConverged = true;
+    }
+    else if((typeof ittValues) != 'undefined')
+    {
+        var newCost = Matrixs.make(ittValues[ittValues.length-1]);
+        var oldCost = Matrixs.make(ittValues[ittValues.length-2]);
+        var change = newCost.subtract(oldCost).rms(); 
+        if(change < 0.001) // trust region expanding 
+        {
+             hasConverged = false;
+             return hasConverged;
+        }
+    }
+    
     if(change < 0.001)
     {
         hasConverged = true;
@@ -2181,7 +2852,7 @@ function hasConverged(costArray)
 module.exports.get_jacobian = get_jacobian;
 module.exports.get_residuals = get_residuals;
 module.exports.hasConverged = hasConverged;
-},{"../Matrixs/matrix":9,"../Models/models":21}],25:[function(require,module,exports){
+},{"../Matrixs/matrix":12,"../Models/models":24}],29:[function(require,module,exports){
 /*
 MIT License (MIT)
 Copyright (c) 2016 Nathan Zimmerman
@@ -2230,7 +2901,7 @@ function gauss_newton(dataObj,modelObj,options)
 module.exports = gauss_newton; 
 
 //var step = Matrixs.multiply(Matrixs.transpose(J),J).invert().multiply(Matrixs.transpose(J)).multiply(r);
-},{"../Matrixs/matrix":9,"../Models/models":21,"./common":24}],26:[function(require,module,exports){
+},{"../Matrixs/matrix":12,"../Models/models":24,"./common":28}],30:[function(require,module,exports){
 /*
 MIT License (MIT)
 Copyright (c) 2016 Nathan Zimmerman
@@ -2241,12 +2912,14 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
 
 require('../Matrixs/matrix');
 require('../Models/models');
+var u = require('../Matrixs/mUtils');
 var comLib = require('./common'); 
+
 
 function levenberg_marquardt(dataObj,modelObj,options)
 {
     var resultObj = {};
-    resultObj.itterationValues = [modelObj.param.slice()]; // This is the initial guess 
+    resultObj.itterationValues = [u.matrix_copy(modelObj.param)]; // This is the initial guess 
     var r = comLib.get_residuals(dataObj,modelObj); // initial error 
     resultObj.itterationCost = [r.rms()]; // inital cost 
     var currCost = r.rms();
@@ -2259,7 +2932,9 @@ function levenberg_marquardt(dataObj,modelObj,options)
         var J = comLib.get_jacobian(dataObj.input,modelObj);	
         
         var H = J.transpose().multiply(J);
-        var step = H.add(H.diag().multiply(lamda)).invert().multiply(J.transpose()).multiply(r);
+        //var stepPart = H.add(H.diag().multiply(lamda))
+        var stepPart = H.add( Matrixs.ident(H.value.length , H.value.length).multiply(lamda) );
+        var step = stepPart.pinv().multiply(J.transpose()).multiply(r);
         // step =  (H + lamda * diag(H))^(-1) * J^T * r // levenberg step 
 
         modelObj.param = Matrixs.subtract(modelObj.param, step.unroll()).unroll(); // Apply step, Update model coieficents
@@ -2270,7 +2945,7 @@ function levenberg_marquardt(dataObj,modelObj,options)
         if (newCost > currCost) // Was it a bad step? 
         {
             lamda *= 10; // Dampen step 
-            modelObj.param = resultObj.itterationValues[i].slice(); // Revert to old model parameters   
+            modelObj.param = u.matrix_copy(resultObj.itterationValues[i]); // Revert to old model parameters   
         }
         else // Was a good step 
         {
@@ -2278,9 +2953,9 @@ function levenberg_marquardt(dataObj,modelObj,options)
             lamda *= 0.1;  
         } 
 
-        resultObj.itterationValues[i+1] = modelObj.param.slice(); //Store record of model coieficents
+        resultObj.itterationValues[i+1] = u.matrix_copy(modelObj.param); //Store record of model coieficents
         
-        if(comLib.hasConverged(resultObj.itterationCost)) //check for convergence 
+        if(comLib.hasConverged(resultObj.itterationCost,resultObj.itterationValues )) //check for convergence 
         {
             resultObj.convergence = true; 
             break; 
@@ -2288,12 +2963,12 @@ function levenberg_marquardt(dataObj,modelObj,options)
 
     }
 
-    resultObj.solution = modelObj.param.slice(); 
+    resultObj.solution = u.matrix_copy(modelObj.param); 
     return resultObj;
 }
 module.exports = levenberg_marquardt; 
 
-},{"../Matrixs/matrix":9,"../Models/models":21,"./common":24}],27:[function(require,module,exports){
+},{"../Matrixs/mUtils":11,"../Matrixs/matrix":12,"../Models/models":24,"./common":28}],31:[function(require,module,exports){
 /*
 MIT License (MIT)
 Copyright (c) 2016 Nathan Zimatrix.makeerman
@@ -2319,7 +2994,7 @@ matrix.prototype.lsq = function(b)
 {
     return matrix_lsq(matrix.make(this.value),matrix.make(b));
 };
-},{"../Matrixs/matrix.js":9,"../Matrixs/matrixs.js":10}],28:[function(require,module,exports){
+},{"../Matrixs/matrix.js":12,"../Matrixs/matrixs.js":13}],32:[function(require,module,exports){
 /*
 MIT License (MIT)
 Copyright (c) 2016 Nathan Zimatrix.makeerman
@@ -2335,7 +3010,7 @@ Solvers.gaussNewton = require('./gaussNewton');
 Solvers.levenbergMarquardt = require('./levenbergMarquardt');
 require('./lsqr.js');
 
-},{"./gaussNewton":25,"./levenbergMarquardt":26,"./lsqr.js":27}],29:[function(require,module,exports){
+},{"./gaussNewton":29,"./levenbergMarquardt":30,"./lsqr.js":31}],33:[function(require,module,exports){
 /*
 MIT License (MIT)
 Copyright (c) 2016 Nathan Zimmerman
@@ -2348,4 +3023,4 @@ require('./Matrixs/matrix');
 require('./Solvers/solvers');
 require('./Models/models');
 Plots = require('./Plots/plots');
-},{"./Matrixs/matrix":9,"./Models/models":21,"./Plots/plots":23,"./Solvers/solvers":28}]},{},[29]);
+},{"./Matrixs/matrix":12,"./Models/models":24,"./Plots/plots":27,"./Solvers/solvers":32}]},{},[33]);

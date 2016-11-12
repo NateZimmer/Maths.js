@@ -6,10 +6,24 @@ The above copyright notice and this permission notice shall be included in all c
 THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 */ 
 
-//Package file for all models 
-Models ={};
+// Model of the form: m*x +b || param[0]*x + param[1]
 
-Models.line = require('./line');
-Models.power = require('./power');
-Models.jacobian = require('./jacobian');
-Models.neuralNet = require('./neuralNet');
+function sigmoidObj(x)
+{
+    this.param = x; //paramters 
+};
+
+sigmoidObj.type = 'line';
+
+// Evaluate function for a array of points 
+sigmoidObj.prototype.fnc = function(x)
+{
+    var M = [];
+    for(var i = 0; i < x.length; i++)
+    {
+        M[i] = [1 / ( 1 + Math.exp(- this.param[0] * x[i][0]))]; // 1 / (1 + e^(-a*t))
+    }
+    return M;   
+}
+
+module.exports = sigmoidObj;  

@@ -22,13 +22,26 @@ var plotOptions = {};
 
 Plots ={};
 
-var layout = { 
+plotyLayout = { 
+    paper_bgcolor: 'transparent',
+    plot_bgcolor: 'transparent',
+    color: '#DDD',
     xaxis: {
             fixedrange: true
             },
     yaxis: {
         fixedrange:true,
-    }
+    },
+    height:250,
+    width:500,
+    margin: {
+        l:40,
+        r:5,
+        b:30,
+        t:5,
+        pad:4
+    },
+
 };
 
 
@@ -292,9 +305,6 @@ function packageData(dataObj,objType)
         plotArray[activePlotIndex].marker.size = Matrixs.zeros(points).add(markerSize).flatten();
     }
 
-
-    
-
 }
 
 function parseOptions()
@@ -374,8 +384,6 @@ function parseOptions()
          plotArray[activePlotIndex].marker.colorscale = plotOptions.colorscale;
     }
    
-
-
 }
 
 
@@ -398,10 +406,20 @@ function create_graph()
         var Ploty = {};
     }
 
-    if((document.getElementById('plotDiv')) == null )
+    if(typeof(plotOptions.div) == 'undefined')
     {
-        createPlotDiv();
+            if((document.getElementById('plotDiv')) == null )
+            {
+                createPlotDiv();
+            }
+            Plotly.purge('plotDiv');
+            graph = Plotly.newPlot('plotDiv', plotArray,plotyLayout,{displayModeBar: false});
     }
-    Plotly.purge('plotDiv');
-    graph = Plotly.newPlot('plotDiv', plotArray,layout,{displayModeBar: false});
+    else
+    {
+        Plotly.purge(plotOptions.div);
+        graph = Plotly.newPlot(plotOptions.div, plotArray,plotyLayout,{displayModeBar: false});
+    }
+
+    
 }

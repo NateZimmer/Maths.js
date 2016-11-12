@@ -21,5 +21,9 @@ require('./delete');
 require('./random');
 require('./flatten');
 require('./pow');
+require('./fill');
+require('./apply');
+require('./divide');
 
 Matrixs = require('./matrixs');
+Matrixs.util = require('./mUtils');

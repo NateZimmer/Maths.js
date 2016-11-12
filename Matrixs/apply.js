@@ -6,10 +6,36 @@ The above copyright notice and this permission notice shall be included in all c
 THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 */ 
 
-//Package file for all models 
-Models ={};
+var matrix = require('./matrixs');
 
-Models.line = require('./line');
-Models.power = require('./power');
-Models.jacobian = require('./jacobian');
-Models.neuralNet = require('./neuralNet');
+// applies a function to every element of a matrix
+function matrix_apply(A,fnc)
+{
+    var M = [];
+    for(var i = 0 ; i < A.length; i++)
+    {
+        M[i] = [];
+        for(var j = 0; j<A[0].length; j++)
+        {
+            M[i][j] = fnc(A[i][j]);
+        }
+    }
+    return M;
+}
+
+//Add to parent class 
+matrix.prototype.apply = function(fnc)
+{
+    if((typeof fnc) != 'function')
+    {
+        throw 'Must apply a function';
+    }
+    var M = matrix.make(matrix_apply(this.value,fnc));
+    return M;
+};
+
+//Add to parent class 
+matrix.apply = function(A,fnc)
+{
+    return matrix.make(A).apply(fnc);
+}
