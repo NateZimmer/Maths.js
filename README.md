@@ -16,7 +16,33 @@ Currently Maths.js is intended to be used in browsers so include it in the tradi
 ```
 Maths.js can be used with [plotly](https://github.com/plotly/plotly.js) for visualization of data. 
 
-## Matrix Usage Samples 
+## Library Application Sample 
+
+**Linear Regression Example:**
+
+A complete example that uses linear least squares to identify a best fitting polynomial. This is an example of matrix opperations and plotting. 
+
+<p align="center">
+<img src ="https://raw.githubusercontent.com/NateZimmer/Maths.js/master/Images/lsqPlot.png">
+</p>
+
+
+```js
+var X = Matrixs.range(-1.2, 0.01, 1.2); 
+var Y = X.pow(3).subtract(X).addNoise(0.9); // Y = X^3 - X + noise 
+
+// Create matrix for least square solution [x^3,x^2,x,1] 
+var A = X.pow(3).catH(X.pow(2)).catH(X).catH(Matrixs.ones(X.length(),1)); 
+
+var x = A.lsq(Y); // Least squares solution 
+var yFit = A.multiply(x); // Ax = Y 
+plotyLayout.showlegend= false;
+plotyLayout.title= 'Least Square Example'; 
+Plots.create([X,Y],{type:'scatter'}); 
+Plots.add([X,yFit]);
+```
+
+## Basic Matrix Example  
 Maths.js supports numerous matrixs opperations. Below is small sampling and see [here for the matrixs reference](Matrixs.md).  
 **Matrix Creation:** 
 ```js
@@ -28,8 +54,8 @@ A.print();		//prints matrix
 //7.000		8.000		5.000
 ```
 
-**Matrix Addition:**
-One can add scalars or other matricies. Commands can be chained. 
+**Matrix Opperations (Addition, Multiplicaiton ...ect):**
+One can add or perform any basic matrix opperation with scalars or other matricies. These commands can be sequentially chained. 
 ```js
 var A = Matrixs.make([[1,2,3],[4,5,6],[7,8,5]); //creates a 3x3 matrix 
 A.add(1).add([[1,2,3],[0,0,0],[0,0,0]]).print(); // adds scalar of 1 to matrix, then adds a 3x3 matrix, then prints result.
@@ -64,28 +90,6 @@ var Y = X.addNoise(0.9); // Adds 90% relative noise
 Plots.create([Y],{type:'scatter'}); 
 Plots.add([X]);
 ```
-
-**Linear Regression Example:**
-
-A more complex example that uses linear least squares to identify a best fitting polynomial. 
-
-<p align="center">
-<img src ="https://raw.githubusercontent.com/NateZimmer/Maths.js/master/Images/lsqPlot.png">
-</p>
-
-
-```js
-var X = Matrixs.range(-1.2,0.01,1.2);
-var Y = X.pow(3).subtract(X).addNoise(0.9); // Y=X^3-X + noise 
-var A = X.pow(3).catH(X.pow(2)).catH(X).catH(Matrixs.ones(X.length(),1)); 
-var x = A.lsq(Y); // Least squares solution 
-var yFit = A.multiply(x); // Ax = Y 
-plotyLayout.showlegend= false;
-plotyLayout.title= 'Least Square Example'; 
-Plots.create([X,Y],{type:'scatter'}); 
-Plots.add([X,yFit]);
-```
-
 
 ## License: MIT
 https://opensource.org/licenses/MIT
