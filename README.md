@@ -2,7 +2,7 @@
 <img src ="https://raw.githubusercontent.com/NateZimmer/Maths.js/master/Images/BannerImage.png">
 </p>
 <p align="center"><strong> 
-Navigation: <a href='READNE.md'>Home</a> | <a href='Matrixs.md'>Matrixs</a> | <a href='Plots.md'>Plots</a>
+Navigation: <a href='README.md'>Home</a> | <a href='Matrixs.md'>Matrixs</a> | <a href='Plots.md'>Plots</a>
 </strong>
 </p>
 
@@ -33,7 +33,7 @@ This example uses linear least squares to identify a best fitting polynomial to 
 
 
 ```js
-var X = Matrixs.range(-1.2, 0.01, 1.2); 
+var X = Matrixs.range(-1.2, 0.01, 1.2); // Creates a matrixs with a range of values 
 var Y = X.pow(3).subtract(X).addNoise(0.9); // Y = X^3 - X + noise 
 
 // Create a column matrix for a least square solution [x^3,x^2,x,1] 
@@ -85,7 +85,8 @@ A.invert().print(); //Prints after inverison. Print is set to 3 decimals
 
 **Simple Line and Scatter Plot :**
 
-Maths.js can easily create plots for visualization. Please see <strong> [here for the plot reference](Plots.md). </strong>   
+Maths.js can easily create plots for visualization. Please see <strong> [here for the plot reference](Plots.md). </strong>. The backbone of this 
+library is [plotly](https://github.com/plotly/plotly.js) whos backbone is D3 meaning the plots are SVG based.    
 
 <p align="center">
 <img src ="https://raw.githubusercontent.com/NateZimmer/Maths.js/master/Images/scatterPlot.png">

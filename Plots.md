@@ -1,7 +1,10 @@
 <p align="center">
 <img src ="https://raw.githubusercontent.com/NateZimmer/Maths.js/master/Images/BannerImage.png">
 </p>
-
+<p align="center"><strong> 
+Navigation: <a href='README.md'>Home</a> | <a href='Matrixs.md'>Matrixs</a> | <a href='Plots.md'>Plots</a>
+</strong>
+</p>
 ## Plot Usage
 
 **Intro:**
