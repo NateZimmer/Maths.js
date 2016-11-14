@@ -73,7 +73,8 @@ function matrix_invert(M){
             e = C[i][i];
             //if it's still 0, not invertable (error)
             if(e==0){
-				throw 'Matrix is singular and cannot be inverted';
+				console.log('Matrix is singular and cannot be inverted. Attempting SVD');
+				return pinv(M);
 			}
         }
         

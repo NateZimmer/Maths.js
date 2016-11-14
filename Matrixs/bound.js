@@ -23,6 +23,23 @@ function matrix_check_bounds(A,lb,ub)
     return M; 
 }
 
+
+function matrix_clamp(A,lb,ub)
+{
+    var M = []; 
+    for(var i = 0; i < A.length; i++)
+    {
+        M[i] = [];
+        for(var j = 0; j < A[0].length; j++)
+        {
+            M[i][j] = (Math.round10(A[i][j],-4)>ub) ? ub : (Math.round10(A[i][j],-4)<lb) ? lb : A[i][j];
+        }
+    }
+    return M; 
+}
+
+
+
 //Add to parent class 
 matrix.prototype.checkBounds = function(lb,ub)
 {

@@ -107,12 +107,24 @@ matrix.prototype.catVertical = function(x)
     return matrix.make(M);
 };	
 
+matrix.prototype.catV = function(x)
+{
+    var M = matrix_push(this.value,matrix.make(x).value);
+    return matrix.make(M);
+};	
+
 matrix.catHorizontal = function(A,B)
 {
     return new matrix(matrix_cat_horizontal(matrix.make(A).value,matrix.make(B).value));
 }
 
 matrix.prototype.catHorizontal = function(x)
+{
+    var M = matrix_cat_horizontal(this.value,matrix.make(x).value);
+    return matrix.make(M);
+};	
+
+matrix.prototype.catH = function(x)
 {
     var M = matrix_cat_horizontal(this.value,matrix.make(x).value);
     return matrix.make(M);

@@ -71,7 +71,7 @@ matrix.prototype.add = function(x)
 };
 
 
-},{"./mUtils":11,"./matrixs":13}],2:[function(require,module,exports){
+},{"./mUtils":12,"./matrixs":14}],2:[function(require,module,exports){
 /*
 MIT License (MIT)
 Copyright (c) 2016 Nathan Zimmerman
@@ -113,7 +113,7 @@ matrix.apply = function(A,fnc)
 {
     return matrix.make(A).apply(fnc);
 }
-},{"./matrixs":13}],3:[function(require,module,exports){
+},{"./matrixs":14}],3:[function(require,module,exports){
 /*
 MIT License (MIT)
 Copyright (c) 2016 Nathan Zimatrix.makeerman
@@ -139,6 +139,23 @@ function matrix_check_bounds(A,lb,ub)
     return M; 
 }
 
+
+function matrix_clamp(A,lb,ub)
+{
+    var M = []; 
+    for(var i = 0; i < A.length; i++)
+    {
+        M[i] = [];
+        for(var j = 0; j < A[0].length; j++)
+        {
+            M[i][j] = (Math.round10(A[i][j],-4)>ub) ? ub : (Math.round10(A[i][j],-4)<lb) ? lb : A[i][j];
+        }
+    }
+    return M; 
+}
+
+
+
 //Add to parent class 
 matrix.prototype.checkBounds = function(lb,ub)
 {
@@ -151,7 +168,7 @@ matrix.checkBounds = function(A,lb,ub)
 {
     return matrix.make(A).checkBounds(lb,ub);
 }
-},{"./matrixs":13}],4:[function(require,module,exports){
+},{"./matrixs":14}],4:[function(require,module,exports){
 /*
 MIT License (MIT)
 Copyright (c) 2016 Nathan Zimmerman
@@ -281,7 +298,7 @@ matrix.zeros = function(m,n)
 {
     return matrix.make(matrix_zeros(m,n));
 }
-},{"./mUtils":11,"./matrixs":13}],5:[function(require,module,exports){
+},{"./mUtils":12,"./matrixs":14}],5:[function(require,module,exports){
 /*
 MIT License (MIT)
 Copyright (c) 2016 Nathan Zimatrix.makeerman
@@ -344,7 +361,7 @@ matrix.deleteCol = function(A,colNum)
 {
     return matrix.make(A).deleteCol(colNum);
 }
-},{"./mUtils":11,"./matrixs":13}],6:[function(require,module,exports){
+},{"./mUtils":12,"./matrixs":14}],6:[function(require,module,exports){
 /*
 MIT License (MIT)
 Copyright (c) 2016 Nathan Zimmerman
@@ -385,7 +402,7 @@ matrix.diag = function(A)
 {
     return matrix.make(A).diag();
 }
-},{"./matrixs":13}],7:[function(require,module,exports){
+},{"./matrixs":14}],7:[function(require,module,exports){
 /*
 MIT License (MIT)
 Copyright (c) 2016 Nathan Zimmerman
@@ -440,7 +457,7 @@ matrix.divide = function(A,B)
 {
     return matrix.make(A).divide(Matrixs.make(B));
 }
-},{"./matrixs":13,"./shape":18}],8:[function(require,module,exports){
+},{"./matrixs":14,"./shape":19}],8:[function(require,module,exports){
 /*
 MIT License (MIT)
 Copyright (c) 2016 Nathan Zimmerman
@@ -493,7 +510,7 @@ matrix.fill = function(A,m,n)
 {
     return matrix.make(A).fill(m,n);
 }
-},{"./matrixs":13,"./transpose":21}],9:[function(require,module,exports){
+},{"./matrixs":14,"./transpose":22}],9:[function(require,module,exports){
 /*
 MIT License (MIT)
 Copyright (c) 2016 Nathan Zimmerman
@@ -522,7 +539,7 @@ matrix.flatten = function(A)
 {
     return matrix.make(A).flatten();
 }
-},{"./matrixs":13}],10:[function(require,module,exports){
+},{"./matrixs":14}],10:[function(require,module,exports){
 /*
 MIT License (MIT)
 Copyright (c) 2016 Nathan Zimmerman
@@ -598,7 +615,8 @@ function matrix_invert(M){
             e = C[i][i];
             //if it's still 0, not invertable (error)
             if(e==0){
-				throw 'Matrix is singular and cannot be inverted';
+				console.log('Matrix is singular and cannot be inverted. Attempting SVD');
+				return pinv(M);
 			}
         }
         
@@ -1003,7 +1021,93 @@ function svd(A) {
 	return {U:u,S:q,V:v}
 };
 
-},{"./mUtils":11,"./matrixs":13}],11:[function(require,module,exports){
+},{"./mUtils":12,"./matrixs":14}],11:[function(require,module,exports){
+
+var U = require('./mUtils');
+require('./transpose');
+require('./flatten');
+require('./shape');
+var matrix = require('./matrixs');
+
+
+function lag_matrix(A,start,end)
+{
+    var M = [];
+    var Y = matrix.make(A).transpose().flatten(); // Converts to 1D row vector;
+    var shifts = (end - start)+1;
+    var iStart = start; 
+
+    for(var i = 0; i < shifts; i++)
+    {
+        var yCopy = Y.slice(); 
+        for(var j = 0; j <iStart; j++)
+        {
+            yCopy.unshift(0);
+            yCopy.pop();
+        }
+        iStart++; 
+        M.push(yCopy);
+    }
+    M = matrix.make(M).transpose().value; // Convert back to column array 
+    return M;
+
+}
+
+
+function lag_matrix_trim(A,start,end)
+{
+    var M = [];
+    var Y = matrix.make(A).transpose().flatten(); // Converts to 1D row vector;
+    var shifts = (end - start)+1;
+    var iStart = start; 
+
+    for(var i = 0; i < shifts; i++)
+    {
+        var yCopy = Y.slice(); 
+        for(var j = 0; j <iStart; j++)
+        {
+            yCopy.unshift(0);
+            yCopy.pop();
+        }
+        iStart++; 
+        M.push(yCopy);
+    }
+    M = matrix.make(M).transpose().value; // Convert back to column array
+
+    for(var i = 0; i < end; i++)
+    {
+        M.shift();
+    }
+
+    return M;
+}
+
+
+matrix.prototype.lag = function(start,end)
+{
+    var M = lag_matrix(this.value,start,end);
+    return matrix.make(M);
+};
+
+matrix.lag = function(A,start,end)
+{
+    return new matrix(matrix.make(A).lag(start,end));
+}
+
+
+matrix.prototype.lagTrim = function(start,end)
+{
+    var M = lag_matrix_trim(this.value,start,end);
+    return matrix.make(M);
+};
+
+
+matrix.lagTrim = function(A,start,end)
+{
+    return new matrix(matrix.make(A).lagTrim(start,end));
+}
+
+},{"./flatten":9,"./mUtils":12,"./matrixs":14,"./shape":19,"./transpose":22}],12:[function(require,module,exports){
 /*
 MIT License (MIT)
 Copyright (c) 2016 Nathan Zimmerman
@@ -1252,7 +1356,7 @@ function matrix_copy(M)
     return M_Array;
 }
 module.exports.matrix_copy = matrix_copy; 
-},{}],12:[function(require,module,exports){
+},{}],13:[function(require,module,exports){
 /*
 MIT License (MIT)
 Copyright (c) 2016 Nathan Zimmerman
@@ -1279,10 +1383,11 @@ require('./pow');
 require('./fill');
 require('./apply');
 require('./divide');
+require('./lag');
 
 Matrixs = require('./matrixs');
 Matrixs.util = require('./mUtils');
-},{"./add":1,"./apply":2,"./bound":3,"./create":4,"./delete":5,"./diag":6,"./divide":7,"./fill":8,"./flatten":9,"./invert":10,"./mUtils":11,"./matrixs":13,"./multiply":14,"./pow":15,"./print":16,"./random":17,"./shape":18,"./stats":19,"./subtract":20,"./transpose":21}],13:[function(require,module,exports){
+},{"./add":1,"./apply":2,"./bound":3,"./create":4,"./delete":5,"./diag":6,"./divide":7,"./fill":8,"./flatten":9,"./invert":10,"./lag":11,"./mUtils":12,"./matrixs":14,"./multiply":15,"./pow":16,"./print":17,"./random":18,"./shape":19,"./stats":20,"./subtract":21,"./transpose":22}],14:[function(require,module,exports){
 /*
 MIT License (MIT)
 Copyright (c) 2016 Nathan Zimmerman
@@ -1330,7 +1435,7 @@ matrixs.make = function(M)
 console.log('Loading matrix');
 
 module.exports = matrixs;
-},{"./mUtils":11}],14:[function(require,module,exports){
+},{"./mUtils":12}],15:[function(require,module,exports){
 /*
 MIT License (MIT)
 Copyright (c) 2016 Nathan Zimmerman
@@ -1464,7 +1569,7 @@ matrix.multiply = function(A,B)
 }
 
 
-},{"./mUtils":11,"./matrixs":13}],15:[function(require,module,exports){
+},{"./mUtils":12,"./matrixs":14}],16:[function(require,module,exports){
 /*
 MIT License (MIT)
 Copyright (c) 2016 Nathan Zimmerman
@@ -1538,7 +1643,7 @@ matrix.square = function(A,val)
 {
     return matrix.make(A).square(val);
 }
-},{"./matrixs":13}],16:[function(require,module,exports){
+},{"./matrixs":14}],17:[function(require,module,exports){
 /*
 MIT License (MIT)
 Copyright (c) 2016 Nathan Zimmerman
@@ -1585,7 +1690,7 @@ matrix.print = function(M)
     return print_matrix(matrix.make(M).value);
 };
 
-},{"./matrixs":13}],17:[function(require,module,exports){
+},{"./matrixs":14}],18:[function(require,module,exports){
 /*
 MIT License (MIT)
 Copyright (c) 2016 Nathan Zimmerman
@@ -1711,7 +1816,7 @@ matrix.randn = function(m,n)
 {
     return matrix.make(matrix_randn(m,n));
 }
-},{"./matrixs":13,"./stats":19}],18:[function(require,module,exports){
+},{"./matrixs":14,"./stats":20}],19:[function(require,module,exports){
 /*
 MIT License (MIT)
 Copyright (c) 2016 Nathan Zimmerman
@@ -1821,12 +1926,24 @@ matrix.prototype.catVertical = function(x)
     return matrix.make(M);
 };	
 
+matrix.prototype.catV = function(x)
+{
+    var M = matrix_push(this.value,matrix.make(x).value);
+    return matrix.make(M);
+};	
+
 matrix.catHorizontal = function(A,B)
 {
     return new matrix(matrix_cat_horizontal(matrix.make(A).value,matrix.make(B).value));
 }
 
 matrix.prototype.catHorizontal = function(x)
+{
+    var M = matrix_cat_horizontal(this.value,matrix.make(x).value);
+    return matrix.make(M);
+};	
+
+matrix.prototype.catH = function(x)
 {
     var M = matrix_cat_horizontal(this.value,matrix.make(x).value);
     return matrix.make(M);
@@ -1881,7 +1998,7 @@ matrix.row = function(A,start)
 {
     return new matrix(matrix_get_rows(matrix.make(A).value,start));
 }
-},{"./mUtils":11,"./matrixs":13}],19:[function(require,module,exports){
+},{"./mUtils":12,"./matrixs":14}],20:[function(require,module,exports){
 /*
 MIT License (MIT)
 Copyright (c) 2016 Nathan Zimmerman
@@ -2010,7 +2127,7 @@ matrix.prototype.round = function(d)
     var M = matrix_round(this.value,d);
     return matrix.make(M);
 };
-},{"./mUtils":11,"./matrixs":13}],20:[function(require,module,exports){
+},{"./mUtils":12,"./matrixs":14}],21:[function(require,module,exports){
 /*
 MIT License (MIT)
 Copyright (c) 2016 Nathan Zimmerman
@@ -2068,7 +2185,7 @@ matrix.subtract = function(A,B)
 {
     return new matrix(matrix_subtract(matrix.make(A).value,matrix.make(B).value));
 }
-},{"./add":1,"./mUtils":11,"./matrixs":13}],21:[function(require,module,exports){
+},{"./add":1,"./mUtils":12,"./matrixs":14}],22:[function(require,module,exports){
 /*
 MIT License (MIT)
 Copyright (c) 2016 Nathan Zimmerman
@@ -2111,7 +2228,7 @@ matrix.transpose = function(A)
 {
     return matrix.make(A).transpose();
 }
-},{"./matrixs":13}],22:[function(require,module,exports){
+},{"./matrixs":14}],23:[function(require,module,exports){
 /*
 MIT License (MIT)
 Copyright (c) 2016 Nathan Zimatrix.makeerman
@@ -2150,7 +2267,7 @@ function numJacobian(X,modelObj)
 }
 
 module.exports = numJacobian; 
-},{"../Matrixs/mUtils":11,"../Matrixs/matrix":12}],23:[function(require,module,exports){
+},{"../Matrixs/mUtils":12,"../Matrixs/matrix":13}],24:[function(require,module,exports){
 /*
 MIT License (MIT)
 Copyright (c) 2016 Nathan Zimmerman
@@ -2192,7 +2309,7 @@ lineObj.prototype.grad = function(x)
 }
 
 module.exports = lineObj;  
-},{}],24:[function(require,module,exports){
+},{}],25:[function(require,module,exports){
 /*
 MIT License (MIT)
 Copyright (c) 2016 Nathan Zimmerman
@@ -2208,7 +2325,7 @@ Models.line = require('./line');
 Models.power = require('./power');
 Models.jacobian = require('./jacobian');
 Models.neuralNet = require('./neuralNet');
-},{"./jacobian":22,"./line":23,"./neuralNet":25,"./power":26}],25:[function(require,module,exports){
+},{"./jacobian":23,"./line":24,"./neuralNet":26,"./power":27}],26:[function(require,module,exports){
 /*
 MIT License (MIT)
 Copyright (c) 2016 Nathan Zimmerman
@@ -2322,7 +2439,7 @@ module.exports = nnObj;
 
 
 
-},{"../Matrixs/mUtils":11,"../Matrixs/matrix":12}],26:[function(require,module,exports){
+},{"../Matrixs/mUtils":12,"../Matrixs/matrix":13}],27:[function(require,module,exports){
 /*
 MIT License (MIT)
 Copyright (c) 2016 Nathan Zimmerman
@@ -2364,7 +2481,7 @@ modelObj.prototype.grad = function(x)
 }
 
 module.exports = modelObj;  
-},{}],27:[function(require,module,exports){
+},{}],28:[function(require,module,exports){
 /*
 MIT License (MIT)
 Copyright (c) 2016 Nathan Zimmerman
@@ -2791,7 +2908,7 @@ function create_graph()
     
 }
 
-},{"../Matrixs/matrix":12,"../Matrixs/matrixs":13}],28:[function(require,module,exports){
+},{"../Matrixs/matrix":13,"../Matrixs/matrixs":14}],29:[function(require,module,exports){
 
 
 require('../Matrixs/matrix');
@@ -2852,7 +2969,7 @@ function hasConverged(costArray,ittValues)
 module.exports.get_jacobian = get_jacobian;
 module.exports.get_residuals = get_residuals;
 module.exports.hasConverged = hasConverged;
-},{"../Matrixs/matrix":12,"../Models/models":24}],29:[function(require,module,exports){
+},{"../Matrixs/matrix":13,"../Models/models":25}],30:[function(require,module,exports){
 /*
 MIT License (MIT)
 Copyright (c) 2016 Nathan Zimmerman
@@ -2901,7 +3018,7 @@ function gauss_newton(dataObj,modelObj,options)
 module.exports = gauss_newton; 
 
 //var step = Matrixs.multiply(Matrixs.transpose(J),J).invert().multiply(Matrixs.transpose(J)).multiply(r);
-},{"../Matrixs/matrix":12,"../Models/models":24,"./common":28}],30:[function(require,module,exports){
+},{"../Matrixs/matrix":13,"../Models/models":25,"./common":29}],31:[function(require,module,exports){
 /*
 MIT License (MIT)
 Copyright (c) 2016 Nathan Zimmerman
@@ -2942,7 +3059,7 @@ function levenberg_marquardt(dataObj,modelObj,options)
         newCost =  r.rms(); // store cost
         resultObj.itterationCost[i+1] = newCost; 
 
-        if (newCost > currCost) // Was it a bad step? 
+        if ((newCost > currCost)) // Was it a bad step? 
         {
             lamda *= 10; // Dampen step 
             modelObj.param = u.matrix_copy(resultObj.itterationValues[i]); // Revert to old model parameters   
@@ -2968,7 +3085,7 @@ function levenberg_marquardt(dataObj,modelObj,options)
 }
 module.exports = levenberg_marquardt; 
 
-},{"../Matrixs/mUtils":11,"../Matrixs/matrix":12,"../Models/models":24,"./common":28}],31:[function(require,module,exports){
+},{"../Matrixs/mUtils":12,"../Matrixs/matrix":13,"../Models/models":25,"./common":29}],32:[function(require,module,exports){
 /*
 MIT License (MIT)
 Copyright (c) 2016 Nathan Zimatrix.makeerman
@@ -2994,7 +3111,7 @@ matrix.prototype.lsq = function(b)
 {
     return matrix_lsq(matrix.make(this.value),matrix.make(b));
 };
-},{"../Matrixs/matrix.js":12,"../Matrixs/matrixs.js":13}],32:[function(require,module,exports){
+},{"../Matrixs/matrix.js":13,"../Matrixs/matrixs.js":14}],33:[function(require,module,exports){
 /*
 MIT License (MIT)
 Copyright (c) 2016 Nathan Zimatrix.makeerman
@@ -3010,7 +3127,7 @@ Solvers.gaussNewton = require('./gaussNewton');
 Solvers.levenbergMarquardt = require('./levenbergMarquardt');
 require('./lsqr.js');
 
-},{"./gaussNewton":29,"./levenbergMarquardt":30,"./lsqr.js":31}],33:[function(require,module,exports){
+},{"./gaussNewton":30,"./levenbergMarquardt":31,"./lsqr.js":32}],34:[function(require,module,exports){
 /*
 MIT License (MIT)
 Copyright (c) 2016 Nathan Zimmerman
@@ -3023,4 +3140,4 @@ require('./Matrixs/matrix');
 require('./Solvers/solvers');
 require('./Models/models');
 Plots = require('./Plots/plots');
-},{"./Matrixs/matrix":12,"./Models/models":24,"./Plots/plots":27,"./Solvers/solvers":32}]},{},[33]);
+},{"./Matrixs/matrix":13,"./Models/models":25,"./Plots/plots":28,"./Solvers/solvers":33}]},{},[34]);

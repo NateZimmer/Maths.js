@@ -24,6 +24,7 @@ require('./pow');
 require('./fill');
 require('./apply');
 require('./divide');
+require('./lag');
 
 Matrixs = require('./matrixs');
 Matrixs.util = require('./mUtils');

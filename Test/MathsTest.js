@@ -349,6 +349,24 @@ addTest({
 });
 
 
+addTest({
+	testName: 'Lag Test',
+	testString: '\
+	var A = Matrixs.range(3);\
+	A = A.lag(0,2);',
+	expectedVal : [[0,0,0],[1,0,0],[2,1,0]],
+});
+
+
+addTest({
+	testName: 'Lag Trim Test',
+	testString: '\
+	var A = Matrixs.range(5);\
+	A = A.lagTrim(0,2);',
+	expectedVal : [[2,1,0],[3,2,1],[4,3,2]],
+});
+
+
 
 function executeUnitTests()
 {

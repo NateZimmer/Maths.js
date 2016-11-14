@@ -38,7 +38,7 @@ function levenberg_marquardt(dataObj,modelObj,options)
         newCost =  r.rms(); // store cost
         resultObj.itterationCost[i+1] = newCost; 
 
-        if (newCost > currCost) // Was it a bad step? 
+        if ((newCost > currCost)) // Was it a bad step? 
         {
             lamda *= 10; // Dampen step 
             modelObj.param = u.matrix_copy(resultObj.itterationValues[i]); // Revert to old model parameters   

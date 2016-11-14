@@ -40,14 +40,14 @@ A.add(1).add([[1,2,3],[0,0,0],[0,0,0]]).print(); // adds scalar of 1 to matrix, 
 ```
 
 **Matrix Inversion:**
-Maths.js can invert arbitrary sized(e.g. 100x100) non singular matricies
+Maths.js can invert arbitrary sized(e.g. 100x100) singular and non singular(with SVD) matricies.
 ```js
-var A = new Matrixs([[1,2,3],[4,5,6],[7,8,5]]); //creates a 3x3 matrix
+var A = new Matrixs([[1,2,3],[4,5,6],[7,8,9]]); //creates a 3x3 matrix
 A.invert().print(); //Prints after inverison. Print is set to 3 decimals 
 //Results: 
-//-1.917		1.167		-0.250
-//1.833			-1.333		0.500
-//-0.250		0.500		-0.250
+//-0.639        -0.167		0.306
+//-0.056        0.000		0.056
+//0.528         0.167      -0.194
 ```
 ## Plot Usage Samples 
 
@@ -62,6 +62,21 @@ Plots.add([X]);
 <p align="center">
 <img src ="https://raw.githubusercontent.com/NateZimmer/Maths.js/master/Images/scatterPlot.png">
 </p>
+
+**Linear Regression Example:**
+A more complex example that uses linear least squares to identify a best fitting polynomial. 
+```js
+var X = Matrixs.range(-1.2,0.01,1.2);
+var Y = X.pow(3).subtract(X).addNoise(0.9); // Y=X^3-X + noise 
+var A = X.pow(3).catH(X.pow(2)).catH(X).catH(Matrixs.ones(X.length(),1)); 
+var x = A.lsq(Y); // Least squares solution 
+var yFit = A.multiply(x); // Ax = Y 
+plotyLayout.showlegend= false;
+plotyLayout.title= 'Least Square Example'; 
+Plots.create([X,Y],{type:'scatter'}); 
+Plots.add([X,yFit]);
+```
+
 
 ## License: MIT
 https://opensource.org/licenses/MIT

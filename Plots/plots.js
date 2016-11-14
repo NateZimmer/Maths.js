@@ -383,6 +383,14 @@ function parseOptions()
     {
          plotArray[activePlotIndex].marker.colorscale = plotOptions.colorscale;
     }
+
+    if(typeof(plotyLayout.title) !='undefined')
+    {
+        if(plotyLayout.margin.t<25)
+        {
+            plotyLayout.margin.t = 25;
+        }
+    }
    
 }
 
