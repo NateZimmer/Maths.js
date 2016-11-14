@@ -3,9 +3,10 @@
 </p>
 <p align="center"><strong> 
 
-[Home](README.md) [Matrixs](Matrixs.md) [Plotting](Plots.md) <a href='Plots.md'>Plots</a>
+Navigation: <a href='READNE.md'>Home</a> <a href='Matrixs.md'>Matrixs</a> <a href='Plots.md'>Plots</a>
 
-</strong></p>
+</strong>
+</p>
 
 ## Maths.js
 A math library for javascript with an emphasis on matrix opperations, non linear solvers, and visualization. This library is designed to bring advance mathematical computation to client side javascript and eliminate the need for python/octave/blas calls.  
