@@ -53,18 +53,27 @@ A.invert().print(); //Prints after inverison. Print is set to 3 decimals
 
 **Simple Line and Scatter Plot :**
 
+<p align="center">
+<img src ="https://raw.githubusercontent.com/NateZimmer/Maths.js/master/Images/scatterPlot.png">
+</p>
+
+
 ```js
 var X = Matrixs.range(100); // Creates a 0-99 value array
 var Y = X.addNoise(0.9); // Adds 90% relative noise 
 Plots.create([Y],{type:'scatter'}); 
 Plots.add([X]);
 ```
-<p align="center">
-<img src ="https://raw.githubusercontent.com/NateZimmer/Maths.js/master/Images/scatterPlot.png">
-</p>
 
 **Linear Regression Example:**
+
 A more complex example that uses linear least squares to identify a best fitting polynomial. 
+
+<p align="center">
+<img src ="https://raw.githubusercontent.com/NateZimmer/Maths.js/master/Images/lsqPlot.png">
+</p>
+
+
 ```js
 var X = Matrixs.range(-1.2,0.01,1.2);
 var Y = X.pow(3).subtract(X).addNoise(0.9); // Y=X^3-X + noise 
