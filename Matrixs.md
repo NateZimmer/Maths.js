@@ -1,5 +1,5 @@
 <p align="center">
-<img src ="https://raw.githubusercontent.com/NateZimmer/Maths.js/master/BannerImage.png">
+<img src ="https://raw.githubusercontent.com/NateZimmer/Maths.js/master/Images/BannerImage.png">
 </p>
 
 ## Matrix Usage
