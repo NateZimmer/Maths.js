@@ -2,9 +2,7 @@
 <img src ="https://raw.githubusercontent.com/NateZimmer/Maths.js/master/Images/BannerImage.png">
 </p>
 <p align="center"><strong> 
-
-Navigation: <a href='READNE.md'>Home</a> <a href='Matrixs.md'>Matrixs</a> <a href='Plots.md'>Plots</a>
-
+Navigation: <a href='READNE.md'>Home</a> | <a href='Matrixs.md'>Matrixs</a> | <a href='Plots.md'>Plots</a>
 </strong>
 </p>
 
