@@ -263,7 +263,7 @@ function matrix_ident(m,n)
 
     if((typeof n)== 'undefined')
     {
-        n = 1; 
+        n = m; 
     }
 
     for(var i = 0 ; i <m; i++)
@@ -2866,6 +2866,14 @@ function parseOptions()
     if((typeof plotOptions.colorscale) != 'undefined')
     {
          plotArray[activePlotIndex].marker.colorscale = plotOptions.colorscale;
+    }
+
+    if(typeof(plotyLayout.title) !='undefined')
+    {
+        if(plotyLayout.margin.t<25)
+        {
+            plotyLayout.margin.t = 25;
+        }
     }
    
 }

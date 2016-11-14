@@ -92,7 +92,7 @@ function matrix_ident(m,n)
 
     if((typeof n)== 'undefined')
     {
-        n = 1; 
+        n = m; 
     }
 
     for(var i = 0 ; i <m; i++)

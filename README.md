@@ -42,8 +42,8 @@ Plots.create([X,Y],{type:'scatter'});
 Plots.add([X,yFit]);
 ```
 
-## Basic Matrix Example  
-Maths.js supports numerous matrixs opperations. Below is small sampling and see [here for the matrixs reference](Matrixs.md).  
+## Basic Matrix Examples  
+Maths.js supports numerous matrixs opperations. Below is small sampling and see ** [here for the matrixs reference](Matrixs.md). **  
 **Matrix Creation:** 
 ```js
 var A = Matrixs.make([[1,2,3],[4,5,6],[7,8,5]); //creates a 3x3 matrix 
@@ -75,7 +75,7 @@ A.invert().print(); //Prints after inverison. Print is set to 3 decimals
 //-0.056        0.000		0.056
 //0.528         0.167      -0.194
 ```
-## Plot Usage Samples 
+## Basic Plot Example  
 
 **Simple Line and Scatter Plot :**
 
