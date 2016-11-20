@@ -8,17 +8,56 @@ Navigation: <a href='README.md'>Home</a> | <a href='Matrixs.md'>Matrixs</a> | <a
 ## Plot Usage
 
 **Intro:**
-Maths.js supports numerous matrixs opperations. This readme displays examples of most of the functionality. Each matrixs object, once created,
-and a assortment of commands that can be used with it such as A.invert(). A matrixs object only has 1 property which is its 2D numerical array. 
-Most matrixs commands such as A.add(x) support 4 input types. A matrixs object, a 2D array, a 1D array, or a scalar can be the arguments to most
-basic commands where applicable. 
+Maths.js can be used as a wrapper around [plotly](https://github.com/plotly/plotly.js) for powerful and simple visualization of data. Note, to keep the size of the overall library down, plotly is not included in Maths.js and must be included externally. 
 
-**Matrix Creation:** 
+## Library Usage
+**Maths.js with Plotting**
+```html
+<script type="text/javascript" src="plotly.min.js"></script>
+<script type="text/javascript" src="Maths.js"></script>
+```
+
+## Examples: 
+
+**Ultra basic example:** 
+
+This example generates a basic plot and will append it to your HTML body. You can specify a specific div by adding options object {div:'yourDiv'}. 
+
+<p align="center">
+<img src ="https://raw.githubusercontent.com/NateZimmer/Maths.js/master/Images/basicPlot.png">
+</p>
+
 ```js
-var A = new Matrixs([[1,2,3],[4,5,6],[7,8,5]); //creates a 3x3 matrix 
-A.print();		//prints matrix 
-//Results 
-//1.000		2.000		3.000
-//4.000		5.000		6.000
-//7.000		8.000		5.000
+var x = Matrixs.range(10);
+Plots.create(x);
+//Plots.create(x,{div:'yourDiv'}); use this to specify a specific div  
+```
+
+**Y vs X Plot**
+
+Create a X / Y plot. 
+
+<p align="center">
+<img src ="https://raw.githubusercontent.com/NateZimmer/Maths.js/master/Images/basicXY.png">
+</p>
+
+ ```js
+var x = Matrixs.range(0,0.1,3);
+var y = x.apply(Math.cos);
+Plots.create([x,y]); 
+```
+
+**Multiple traces and scatter plots**
+
+Create a multi trace plot showing both line type and scatter type. Also shows how to give traces a name in the legend. 
+
+<p align="center">
+<img src ="https://raw.githubusercontent.com/NateZimmer/Maths.js/master/Images/basicScatter.png">
+</p>
+
+ ```js
+var X = Matrixs.range(100); // Creates a 0-99 value array
+var Y = X.addNoise(0.9); // Adds 90% relative noise
+Plots.create(Y,{type:'scatter',name:'Scatter'}); //Creates scatter plot
+Plots.add(X,{name:'Line'}); // Adds orange best fit line
 ```
