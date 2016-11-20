@@ -24,7 +24,7 @@ Maths.js can be used as a wrapper around [plotly](https://github.com/plotly/plot
 This example generates a basic plot and will append it to your HTML body. You can specify a specific div by adding options object {div:'yourDiv'}. 
 
 <p align="center">
-<img src ="https://raw.githubusercontent.com/NateZimmer/Maths.js/master/Images/basicPlot.png">
+<img src ="https://raw.githubusercontent.com/NateZimmer/Maths.js/master/Images/basicPlot.PNG">
 </p>
 
 ```js
@@ -38,7 +38,7 @@ Plots.create(x);
 Create a X / Y plot. 
 
 <p align="center">
-<img src ="https://raw.githubusercontent.com/NateZimmer/Maths.js/master/Images/basicXY.png">
+<img src ="https://raw.githubusercontent.com/NateZimmer/Maths.js/master/Images/basicXY.PNG">
 </p>
 
  ```js
@@ -52,7 +52,7 @@ Plots.create([x,y]);
 Create a multi trace plot showing both line type and scatter type. Also shows how to give traces a name in the legend. 
 
 <p align="center">
-<img src ="https://raw.githubusercontent.com/NateZimmer/Maths.js/master/Images/basicScatter.png">
+<img src ="https://raw.githubusercontent.com/NateZimmer/Maths.js/master/Images/basicScatter.PNG">
 </p>
 
  ```js
