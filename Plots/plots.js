@@ -41,7 +41,10 @@ plotyLayout = {
         t:5,
         pad:4
     },
-
+    legend: {
+        x:0.1,
+        y:1
+    }
 };
 
 
@@ -78,7 +81,9 @@ function plots(inputObj,options)
     activePlotIndex=0;
     plotArray = []; // Erase past data 
     plotOptions = options;
-    var objTypes = parse_data_obj(inputObj);
+    var parsed = parse_data_obj(inputObj);
+    var objTypes = parsed.type; 
+    var inputObj = parsed.input; 
     prep_plot_data(inputObj,objTypes);
     //handle_plot_bounds(inputObj,objTypes);
     parseOptions();
@@ -92,7 +97,9 @@ function add_plot(inputObj,options)
 {
     activePlotIndex++;
     plotOptions = options;
-    var objTypes = parse_data_obj(inputObj);
+    var parsed = parse_data_obj(inputObj);
+    var objTypes = parsed.type; 
+    var inputObj = parsed.input; 
     prep_plot_data(inputObj,objTypes);
     //handle_plot_bounds(inputObj,objTypes);
     parseOptions();
@@ -166,7 +173,7 @@ function parse_data_obj(inputObj)
             objType = 'Multiple Matrixs';
         } 
     }
-    return objType;
+    return {type:objType, input:inputObj};
 }
 
 function prep_plot_data(dataObj,objType)
@@ -382,6 +389,11 @@ function parseOptions()
     if((typeof plotOptions.colorscale) != 'undefined')
     {
          plotArray[activePlotIndex].marker.colorscale = plotOptions.colorscale;
+    }
+
+    if((typeof plotOptions.name) != 'undefined')
+    {
+         plotArray[activePlotIndex].name = plotOptions.name;
     }
 
     if(typeof(plotyLayout.title) !='undefined')

@@ -20,10 +20,43 @@ function get_jacobian(datas,modelObj)
 
 function get_residuals(dataObj,modelObj)
 {
-    // Equivalent: Ax - b --> residuals || error 
+    
     var r = Matrixs.make(modelObj.fnc(dataObj.input)).subtract(dataObj.output);
     return r; 
 }
+
+
+// Equivalent: (y - y^) --> residuals || error 
+function getResiduals(input,output,fnc,params)
+{
+    var r = Matrixs.make(output).subtract(fnc(input,params)); // y - y^
+    return r; 
+}
+module.exports.getResiduals = getResiduals;
+
+
+// Gets Numerical Jacobian, x --> 2D Array, fnc(x,params), params  
+function getNumericalJacobian(x,fnc,params)
+{
+    var epsL = 1e-8;
+	var currParam = params.slice(0); // Make 2 copies 
+    var testParams = params.slice(0);
+	var currValues = Matrixs.make(fnc(x,testParams)); // get values 
+	testParams[0] += epsL; // add pertubation 
+	var J = Matrixs.make(fnc(x,testParams)).subtract(currValues).multiply(1/epsL); // First column of J
+
+	for(var j = 1; j< testParams.length; j++) // Loop each column 
+	{
+	testParams = currParam.slice(0); //clone orginal 
+	testParams[j] += epsL; // add pertubation 
+	var Ji = Matrixs.make(fnc(x,testParams)).subtract(currValues).multiply(1/epsL); // J column
+	J = J.catHorizontal(Ji); // add to J matrix 
+	}
+	return J; // Matrixs obj 
+}
+module.exports.getNumericalJacobian = getNumericalJacobian;
+
+
 
 function hasConverged(costArray,ittValues)
 {

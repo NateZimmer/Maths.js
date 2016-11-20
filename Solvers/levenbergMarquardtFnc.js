@@ -12,11 +12,15 @@ var u = require('../Matrixs/mUtils');
 var comLib = require('./common'); 
 
 
-function levenberg_marquardt(dataObj,modelObj,options)
+//lmObj = {input:yourArray, output: yourArray, fnc: yourFunction, grad: optionalGradient
+function levenberg_marquardtFnc(inputData,outputData,fnc,Xi,options)
 {
+   
+    var x0 = Xi.slice();
+    
     var resultObj = {};
-    resultObj.itterationValues = [u.matrix_copy(modelObj.param)]; // This is the initial guess 
-    var r = comLib.get_residuals(dataObj,modelObj); // initial error 
+    resultObj.itterationValues = [x0.slice()]; // This is the initial guess 
+    var r = comLib.getResiduals(inputData,outputData,fnc,x0); // initial error 
     resultObj.itterationCost = [r.rms()]; // inital cost 
     var currCost = r.rms();
     var newCost = currCost;   
@@ -24,24 +28,31 @@ function levenberg_marquardt(dataObj,modelObj,options)
     
     for(var i = 0 ; i < 50; i++)
     {
-        r = comLib.get_residuals(dataObj,modelObj); //Get current error 
-        var J = comLib.get_jacobian(dataObj.input,modelObj);	
-        
+        r = comLib.getResiduals(inputData,outputData,fnc,x0); //Get current error 
+        var J = comLib.getNumericalJacobian(inputData, fnc, x0);	
+        J = J.multiply(-1); // This is because J is suppose to be residual gradient, not f grad 
+
         var H = J.transpose().multiply(J);
         //var stepPart = H.add(H.diag().multiply(lamda))
-        var stepPart = H.add( Matrixs.ident(H.value.length , H.value.length).multiply(lamda) );
-        var step = stepPart.pinv().multiply(J.transpose()).multiply(r);
+
+        H = H.add( Matrixs.ident(H.value.length).multiply(lamda) ); // Add damping paramater 
+        
+        var g = J.transpose().multiply(r)
+        var step = H.pinv().multiply(g).flatten();
+
         // step =  (H + lamda * diag(H))^(-1) * J^T * r // levenberg step 
 
-        modelObj.param = Matrixs.subtract(modelObj.param, step.unroll()).unroll(); // Apply step, Update model coieficents
-        r = comLib.get_residuals(dataObj,modelObj); //Get current error 
+        x0 = Matrixs.subtract(x0, step).flatten(); // Apply step, Update model coieficents
+        
+        r = comLib.getResiduals(inputData,outputData,fnc,x0); //Get current error 
+        
         newCost =  r.rms(); // store cost
         resultObj.itterationCost[i+1] = newCost; 
 
         if ((newCost > currCost)) // Was it a bad step? 
         {
             lamda *= 10; // Dampen step 
-            modelObj.param = u.matrix_copy(resultObj.itterationValues[i]); // Revert to old model parameters   
+            x0 = u.matrix_copy(resultObj.itterationValues[i]); // Revert to old model parameters   
         }
         else // Was a good step 
         {
@@ -49,7 +60,7 @@ function levenberg_marquardt(dataObj,modelObj,options)
             lamda *= 0.1;  
         } 
 
-        resultObj.itterationValues[i+1] = u.matrix_copy(modelObj.param); //Store record of model coieficents
+        resultObj.itterationValues[i+1] = x0.slice(); //Store record of model coieficents
         
         if(comLib.hasConverged(resultObj.itterationCost,resultObj.itterationValues )) //check for convergence 
         {
@@ -59,8 +70,8 @@ function levenberg_marquardt(dataObj,modelObj,options)
 
     }
 
-    resultObj.solution = u.matrix_copy(modelObj.param); 
+    resultObj.solution = x0.slice(); 
     return resultObj;
 }
 
-module.exports = levenberg_marquardt; 
+module.exports = levenberg_marquardtFnc; 

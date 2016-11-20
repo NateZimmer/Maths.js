@@ -366,7 +366,21 @@ addTest({
 	expectedVal : [[2,1,0],[3,2,1],[4,3,2]],
 });
 
+addTest({
+	testName: 'Functional Levenberg Marquardt',
+	testString: 'function myFunc(x,param){\
+	var X = Matrixs.make(x);\
+	var a = param[0]; var b = param[1]; var c = param[2];\
+	var Y = X.multiply(a).apply(Math.exp).add(X.multiply(c).apply(Math.cos).multiply(b));\
+	return Y.value;}\
+	var X = Matrixs.range(-5,0.05,5);\
+	var Y = Matrixs.make( myFunc( X.value, [-0.5,4,1.5]) ).addNoise(0.01);\
+	var guess = [-1,2,1];\
+	var resultObj = Solvers.levenbergMarquardtFnc(X.value, Y.value, myFunc,guess);\
+	var A = Matrixs.make(resultObj.solution).round(1);',
+	expectedVal : [[-0.5,4,1.5]],
 
+});
 
 function executeUnitTests()
 {

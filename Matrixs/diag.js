@@ -16,7 +16,7 @@ function matrix_diag(A){
     for(var i=0; i<A.length;i++)
     {
         M[i] = [];
-        for(var j = 0; j <A[0].length; j++)
+        for(var j = 0; j <A.length; j++)
         {
             M[i][j] =  (i==j) ? A[i][j] : 0; 
         }
@@ -24,6 +24,27 @@ function matrix_diag(A){
     return M;
 }
 
+function make_diag(A)
+{
+    var M = [];
+    var xLocal = Matrixs.make(A);
+    if(xLocal.shape()[0]<xLocal.shape()[1])
+    {
+        xLocal = xLocal.transpose();
+    }
+    xLocal = xLocal.value;
+
+    for(var i = 0; i < xLocal.length; i++)
+    {
+        M[i]= [];
+        for(var j = 0; j < xLocal.length; j++)
+        {
+            var diagVal = (i==j) ? xLocal[i][0] : 0;
+            M[i][j] = diagVal;
+        }
+    }
+    return M;
+}
 
 //Add to parent class 
 matrix.prototype.diag = function()
@@ -37,4 +58,19 @@ matrix.prototype.diag = function()
 matrix.diag = function(A)
 {
     return matrix.make(A).diag();
+}
+
+
+//Add to parent class 
+matrix.prototype.makeDiag = function()
+{
+    var M = make_diag(this.value);
+    return matrix.make(M);
+};
+
+
+//Add to parent class 
+matrix.makeDiag = function(A)
+{
+    return matrix.make(A).makeDiag();
 }

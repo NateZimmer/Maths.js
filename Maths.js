@@ -380,7 +380,7 @@ function matrix_diag(A){
     for(var i=0; i<A.length;i++)
     {
         M[i] = [];
-        for(var j = 0; j <A[0].length; j++)
+        for(var j = 0; j <A.length; j++)
         {
             M[i][j] =  (i==j) ? A[i][j] : 0; 
         }
@@ -388,6 +388,27 @@ function matrix_diag(A){
     return M;
 }
 
+function make_diag(A)
+{
+    var M = [];
+    var xLocal = Matrixs.make(A);
+    if(xLocal.shape()[0]<xLocal.shape()[1])
+    {
+        xLocal = xLocal.transpose();
+    }
+    xLocal = xLocal.value;
+
+    for(var i = 0; i < xLocal.length; i++)
+    {
+        M[i]= [];
+        for(var j = 0; j < xLocal.length; j++)
+        {
+            var diagVal = (i==j) ? xLocal[i][0] : 0;
+            M[i][j] = diagVal;
+        }
+    }
+    return M;
+}
 
 //Add to parent class 
 matrix.prototype.diag = function()
@@ -401,6 +422,21 @@ matrix.prototype.diag = function()
 matrix.diag = function(A)
 {
     return matrix.make(A).diag();
+}
+
+
+//Add to parent class 
+matrix.prototype.makeDiag = function()
+{
+    var M = make_diag(this.value);
+    return matrix.make(M);
+};
+
+
+//Add to parent class 
+matrix.makeDiag = function(A)
+{
+    return matrix.make(A).makeDiag();
 }
 },{"./matrixs":14}],7:[function(require,module,exports){
 /*
@@ -2525,7 +2561,10 @@ plotyLayout = {
         t:5,
         pad:4
     },
-
+    legend: {
+        x:0.1,
+        y:1
+    }
 };
 
 
@@ -2562,7 +2601,9 @@ function plots(inputObj,options)
     activePlotIndex=0;
     plotArray = []; // Erase past data 
     plotOptions = options;
-    var objTypes = parse_data_obj(inputObj);
+    var parsed = parse_data_obj(inputObj);
+    var objTypes = parsed.type; 
+    var inputObj = parsed.input; 
     prep_plot_data(inputObj,objTypes);
     //handle_plot_bounds(inputObj,objTypes);
     parseOptions();
@@ -2576,7 +2617,9 @@ function add_plot(inputObj,options)
 {
     activePlotIndex++;
     plotOptions = options;
-    var objTypes = parse_data_obj(inputObj);
+    var parsed = parse_data_obj(inputObj);
+    var objTypes = parsed.type; 
+    var inputObj = parsed.input; 
     prep_plot_data(inputObj,objTypes);
     //handle_plot_bounds(inputObj,objTypes);
     parseOptions();
@@ -2650,7 +2693,7 @@ function parse_data_obj(inputObj)
             objType = 'Multiple Matrixs';
         } 
     }
-    return objType;
+    return {type:objType, input:inputObj};
 }
 
 function prep_plot_data(dataObj,objType)
@@ -2868,6 +2911,11 @@ function parseOptions()
          plotArray[activePlotIndex].marker.colorscale = plotOptions.colorscale;
     }
 
+    if((typeof plotOptions.name) != 'undefined')
+    {
+         plotArray[activePlotIndex].name = plotOptions.name;
+    }
+
     if(typeof(plotyLayout.title) !='undefined')
     {
         if(plotyLayout.margin.t<25)
@@ -2939,10 +2987,43 @@ function get_jacobian(datas,modelObj)
 
 function get_residuals(dataObj,modelObj)
 {
-    // Equivalent: Ax - b --> residuals || error 
+    
     var r = Matrixs.make(modelObj.fnc(dataObj.input)).subtract(dataObj.output);
     return r; 
 }
+
+
+// Equivalent: (y - y^) --> residuals || error 
+function getResiduals(input,output,fnc,params)
+{
+    var r = Matrixs.make(output).subtract(fnc(input,params)); // y - y^
+    return r; 
+}
+module.exports.getResiduals = getResiduals;
+
+
+// Gets Numerical Jacobian, x --> 2D Array, fnc(x,params), params  
+function getNumericalJacobian(x,fnc,params)
+{
+    var epsL = 1e-8;
+	var currParam = params.slice(0); // Make 2 copies 
+    var testParams = params.slice(0);
+	var currValues = Matrixs.make(fnc(x,testParams)); // get values 
+	testParams[0] += epsL; // add pertubation 
+	var J = Matrixs.make(fnc(x,testParams)).subtract(currValues).multiply(1/epsL); // First column of J
+
+	for(var j = 1; j< testParams.length; j++) // Loop each column 
+	{
+	testParams = currParam.slice(0); //clone orginal 
+	testParams[j] += epsL; // add pertubation 
+	var Ji = Matrixs.make(fnc(x,testParams)).subtract(currValues).multiply(1/epsL); // J column
+	J = J.catHorizontal(Ji); // add to J matrix 
+	}
+	return J; // Matrixs obj 
+}
+module.exports.getNumericalJacobian = getNumericalJacobian;
+
+
 
 function hasConverged(costArray,ittValues)
 {
@@ -3091,9 +3172,241 @@ function levenberg_marquardt(dataObj,modelObj,options)
     resultObj.solution = u.matrix_copy(modelObj.param); 
     return resultObj;
 }
+
 module.exports = levenberg_marquardt; 
 
 },{"../Matrixs/mUtils":12,"../Matrixs/matrix":13,"../Models/models":25,"./common":29}],32:[function(require,module,exports){
+/*
+MIT License (MIT)
+Copyright (c) 2016 Nathan Zimmerman
+Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the "Software"), to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies of the Software, and to permit persons to whom the Software is furnished to do so, subject to the following conditions:
+The above copyright notice and this permission notice shall be included in all copies or substantial portions of the Software.
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+*/ 
+
+require('../Matrixs/matrix');
+require('../Models/models');
+var u = require('../Matrixs/mUtils');
+var comLib = require('./common'); 
+
+
+//lmObj = {input:yourArray, output: yourArray, fnc: yourFunction, grad: optionalGradient
+function levenberg_marquardtFnc(inputData,outputData,fnc,Xi,options)
+{
+   
+    var x0 = Xi.slice();
+    
+    var resultObj = {};
+    resultObj.itterationValues = [x0.slice()]; // This is the initial guess 
+    var r = comLib.getResiduals(inputData,outputData,fnc,x0); // initial error 
+    resultObj.itterationCost = [r.rms()]; // inital cost 
+    var currCost = r.rms();
+    var newCost = currCost;   
+    var lamda = 0.001; 
+    
+    for(var i = 0 ; i < 50; i++)
+    {
+        r = comLib.getResiduals(inputData,outputData,fnc,x0); //Get current error 
+        var J = comLib.getNumericalJacobian(inputData, fnc, x0);	
+        J = J.multiply(-1); // This is because J is suppose to be residual gradient, not f grad 
+
+        var H = J.transpose().multiply(J);
+        //var stepPart = H.add(H.diag().multiply(lamda))
+
+        H = H.add( Matrixs.ident(H.value.length).multiply(lamda) ); // Add damping paramater 
+        
+        var g = J.transpose().multiply(r)
+        var step = H.pinv().multiply(g).flatten();
+
+        // step =  (H + lamda * diag(H))^(-1) * J^T * r // levenberg step 
+
+        x0 = Matrixs.subtract(x0, step).flatten(); // Apply step, Update model coieficents
+        
+        r = comLib.getResiduals(inputData,outputData,fnc,x0); //Get current error 
+        
+        newCost =  r.rms(); // store cost
+        resultObj.itterationCost[i+1] = newCost; 
+
+        if ((newCost > currCost)) // Was it a bad step? 
+        {
+            lamda *= 10; // Dampen step 
+            x0 = u.matrix_copy(resultObj.itterationValues[i]); // Revert to old model parameters   
+        }
+        else // Was a good step 
+        {
+            currCost = newCost;
+            lamda *= 0.1;  
+        } 
+
+        resultObj.itterationValues[i+1] = x0.slice(); //Store record of model coieficents
+        
+        if(comLib.hasConverged(resultObj.itterationCost,resultObj.itterationValues )) //check for convergence 
+        {
+            resultObj.convergence = true; 
+            break; 
+        }
+
+    }
+
+    resultObj.solution = x0.slice(); 
+    return resultObj;
+}
+
+module.exports = levenberg_marquardtFnc; 
+
+},{"../Matrixs/mUtils":12,"../Matrixs/matrix":13,"../Models/models":25,"./common":29}],33:[function(require,module,exports){
+/*
+MIT License (MIT)
+Copyright (c) 2016 Nathan Zimmerman
+Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the "Software"), to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies of the Software, and to permit persons to whom the Software is furnished to do so, subject to the following conditions:
+The above copyright notice and this permission notice shall be included in all copies or substantial portions of the Software.
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+*/ 
+
+require('../Matrixs/matrix');
+require('../Models/models');
+var u = require('../Matrixs/mUtils');
+var comLib = require('./common'); 
+
+//NZ 
+//This algorithm is a simplificaiton of the trust region reflective algorithm 
+//Special thanks to Nick Mayorov and his awesome blog post: 
+// https://nmayorov.wordpress.com/2015/06/19/trust-region-reflective-algorithm/
+
+
+// Solve a least squares problem with box constraints 
+function bvlsqFnc(A,yTarget,lb,ub)
+{
+    //Prep initial variables 
+    var resultObj = {};
+    resultObj.convergence = false;
+    var lB = prepBound(A,lb);
+    var uB = prepBound(A,ub);
+    var y = Matrixs.make(yTarget);
+    var J = Matrixs.make(A); 
+    J = J.multiply(-1); 
+    var A = Matrixs.make(A);
+
+    var x0 = Matrixs.make(A).lsq(yTarget); // Attempt vanilla solution 
+    var c = makeStriclyFeasible(x0.value,lB,uB);
+    
+    if( c.boundViolations.rms() == 0 ) // if no bounds hit 
+    {
+        console.log('no bound violations found');
+        return {solution:x0}; 
+    }
+    
+    x0 = c.xClamped; // return clamped x0 solution
+
+     r = y.subtract(A.multiply(x0));
+     resultObj.itterationCost = [r.rms()]; // inital cost 
+     resultObj.itterationValues = [x0.flatten()]; // This is the initial guess 
+
+    for(var i = 0; i < 50; i++)
+    {
+        r = y.subtract(A.multiply(x0)); // r=  y - y^ 
+        var g = J.transpose().multiply(r); // Formulate g = J^T * r
+        var gDiag = Matrixs.makeDiag(g); // Make diag g
+        var res = getVjV(x0.value,g.value,lB,uB); //Determine v & J_v
+        var v = res[0];
+        var Jv = Matrixs.makeDiag(res[1]); 
+        var D2 = Matrixs.makeDiag(v); // D^2 = diag(v)
+        var H = J.transpose().multiply(J); // Hessian approximation H = J^T * J
+
+        // p = step = (D^2 * H + g * Jv)^(-1) * D^2 * g
+        var step = D2.multiply(H).add(gDiag.multiply(Jv)).invert().multiply(D2.multiply(g)).multiply(-1);
+        
+        x0 = x0.add(step);
+
+        var c = makeStriclyFeasible(x0.value,lB,uB); // Clamp any bound violations 
+        x0 = c.xClamped; // return clamped x0 solution
+
+        r = y.subtract(A.multiply(x0)); // r=  y - y^ 
+        resultObj.itterationCost.push(r.rms()); // add to cost array 
+        resultObj.itterationValues.push(x0.flatten()); // add paramater to paramarter array 
+
+        if(checkConvergence(resultObj.itterationCost)) // has no benifical progress been made? 
+        {
+            resultObj.convergence = true; // a solution found 
+            break; 
+        }
+
+    }
+    resultObj.solution = x0; // store solution 
+    
+    return resultObj;
+
+}
+
+module.exports = bvlsqFnc; 
+
+function prepBound(y,bound)
+{
+    var boundMatrix = 0;
+    if(!Array.isArray(bound))
+    {
+        boundMatrix = Matrixs.zeros(y.length,1).add(bound).flatten();
+    }
+    else{
+        boundMatrix = bound;
+    }
+    return boundMatrix; 
+}
+
+function getVjV(x,g,lb,ub)
+{
+    var M = [];
+    var Ji = []; 
+    for(var i = 0 ; i < x.length; i++)
+    {
+        M[i] = [];
+        Ji[i] = [];
+        if(g[i][0] < 0)
+        {
+            M[i][0] = (typeof(ub[i]) !='undefined') ? (ub[i] - x[i][0]) : 1;
+            Ji[i][0] = (typeof(ub[i]) !='undefined') ? -1 : 0;   
+        }
+        else
+        {
+            M[i][0] = (typeof(lb[i]) !='undefined') ? (x[i][0] - lb[i]) : 1;  
+            Ji[i][0] = (typeof(lb[i]) !='undefined') ? 1 : 0;  
+        }
+    }
+    return [Matrixs.make(M) , Matrixs.make(Ji)];
+}
+
+
+function makeStriclyFeasible(x,lb,ub)
+{
+    var xNew = [];
+    var boundViolation = []; 
+    var epsL =0.00001;
+
+    for(var i = 0; i < x.length; i++)
+    {
+        xNew[i] = [];
+
+        if( x[i][0] >= ub[i] )
+        {
+            xNew[i][0] = ub[i] - epsL;
+            boundViolation[i] = 1;
+        }
+        else if( x[i][0] <= lb[i] )
+        {
+             xNew[i][0] = lb[i] + epsL;
+             boundViolation[i] = -1;
+        }
+        else
+        {
+            xNew[i][0] = x[i][0];
+            boundViolation[i] = 0;
+        } 
+    }
+    return {xClamped:Matrixs.make(xNew), boundViolations: Matrixs.make(boundViolation)};
+}
+
+
+},{"../Matrixs/mUtils":12,"../Matrixs/matrix":13,"../Models/models":25,"./common":29}],34:[function(require,module,exports){
 /*
 MIT License (MIT)
 Copyright (c) 2016 Nathan Zimatrix.makeerman
@@ -3119,7 +3432,7 @@ matrix.prototype.lsq = function(b)
 {
     return matrix_lsq(matrix.make(this.value),matrix.make(b));
 };
-},{"../Matrixs/matrix.js":13,"../Matrixs/matrixs.js":14}],33:[function(require,module,exports){
+},{"../Matrixs/matrix.js":13,"../Matrixs/matrixs.js":14}],35:[function(require,module,exports){
 /*
 MIT License (MIT)
 Copyright (c) 2016 Nathan Zimatrix.makeerman
@@ -3133,9 +3446,12 @@ Solvers ={};
 
 Solvers.gaussNewton = require('./gaussNewton');
 Solvers.levenbergMarquardt = require('./levenbergMarquardt');
+Solvers.levenbergMarquardtFnc = require('./levenbergMarquardtFnc');
+Solvers.bvls = require('./lsqBounds.js');
+
 require('./lsqr.js');
 
-},{"./gaussNewton":30,"./levenbergMarquardt":31,"./lsqr.js":32}],34:[function(require,module,exports){
+},{"./gaussNewton":30,"./levenbergMarquardt":31,"./levenbergMarquardtFnc":32,"./lsqBounds.js":33,"./lsqr.js":34}],36:[function(require,module,exports){
 /*
 MIT License (MIT)
 Copyright (c) 2016 Nathan Zimmerman
@@ -3148,4 +3464,4 @@ require('./Matrixs/matrix');
 require('./Solvers/solvers');
 require('./Models/models');
 Plots = require('./Plots/plots');
-},{"./Matrixs/matrix":13,"./Models/models":25,"./Plots/plots":28,"./Solvers/solvers":33}]},{},[34]);
+},{"./Matrixs/matrix":13,"./Models/models":25,"./Plots/plots":28,"./Solvers/solvers":35}]},{},[36]);
