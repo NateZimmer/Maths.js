@@ -18,7 +18,7 @@ var comLib = require('./common');
 
 
 // Solve a least squares problem with box constraints 
-function bvlsqFnc(A,yTarget,lb,ub)
+function bvls(A,yTarget,lb,ub)
 {
     //Prep initial variables 
     var resultObj = {};
@@ -35,7 +35,6 @@ function bvlsqFnc(A,yTarget,lb,ub)
     
     if( c.boundViolations.rms() == 0 ) // if no bounds hit 
     {
-        console.log('no bound violations found');
         return {solution:x0}; 
     }
     
@@ -53,12 +52,15 @@ function bvlsqFnc(A,yTarget,lb,ub)
         var res = getVjV(x0.value,g.value,lB,uB); //Determine v & J_v
         var v = res[0];
         var Jv = Matrixs.makeDiag(res[1]); 
-        var D2 = Matrixs.makeDiag(v); // D^2 = diag(v)
+        //var D2 = Matrixs.makeDiag(v); // D^2 = diag(v)
+        var D2 = Matrixs.makeDiag(v.pow(-1));
+        
         var H = J.transpose().multiply(J); // Hessian approximation H = J^T * J
 
         // p = step = (D^2 * H + g * Jv)^(-1) * D^2 * g
-        var step = D2.multiply(H).add(gDiag.multiply(Jv)).invert().multiply(D2.multiply(g)).multiply(-1);
-        
+        //var step = D2.multiply(H).add(gDiag.multiply(Jv)).invert().multiply(D2.multiply(g)).multiply(-1);
+        var step = H.add(D2.multiply(gDiag.multiply(Jv))).invert().multiply(g).multiply(-1);
+
         x0 = x0.add(step);
 
         var c = makeStriclyFeasible(x0.value,lB,uB); // Clamp any bound violations 
@@ -81,7 +83,145 @@ function bvlsqFnc(A,yTarget,lb,ub)
 
 }
 
-module.exports = bvlsqFnc; 
+module.exports.bvls = bvls; 
+
+
+function bvlsFnc(A,fnc,yTarget,lb,ub)
+{
+    //Prep initial variables 
+    var resultObj = {};
+    resultObj.convergence = false;
+    var lB = prepBound(A,lb); //Creates an array of bounds 
+    var uB = prepBound(A,ub);
+    var y = Matrixs.make(yTarget);
+    var J = Matrixs.make(A); 
+    J = J.multiply(-1); 
+    var A = Matrixs.make(A);
+
+    var x0 = Matrixs.make(A).lsq(yTarget); // Attempt vanilla solution 
+    var c = makeStriclyFeasible(x0.value,lB,uB);
+    
+    if( c.boundViolations.rms() == 0 ) // if no bounds hit 
+    {
+        console.log('no bound violations found');
+        return {solution:x0}; 
+    }
+    
+    x0 = c.xClamped; // return clamped x0 solution
+
+     r = y.subtract(fnc(x0.value,x0.flatten()));
+     resultObj.itterationCost = [r.rms()]; // inital cost 
+     resultObj.itterationValues = [x0.flatten()]; // This is the initial lsq clamped solution 
+
+    for(var i = 0; i < 50; i++)
+    {
+        r = y.subtract(fnc(x0.value,x0.flatten())); // r=  y - y^ 
+        var g = J.transpose().multiply(r); // Formulate g = J^T * r
+        var gDiag = Matrixs.makeDiag(g); // Make diag g
+        var res = getVjV(x0.value,g.value,lB,uB); //Determine v & J_v
+        var v = res[0];
+        var Jv = Matrixs.makeDiag(res[1]); 
+        //var D2 = Matrixs.makeDiag(v); // D^2 = diag(v)
+        var D2 = Matrixs.makeDiag(v.pow(-1));
+        
+        var H = J.transpose().multiply(J); // Hessian approximation H = J^T * J
+
+        // p = step = (D^2 * H + g * Jv)^(-1) * D^2 * g
+        //var step = D2.multiply(H).add(gDiag.multiply(Jv)).invert().multiply(D2.multiply(g)).multiply(-1);
+        var step = H.add(D2.multiply(gDiag.multiply(Jv))).invert().multiply(g).multiply(-1);
+
+        x0 = x0.add(step);
+
+        var c = makeStriclyFeasible(x0.value,lB,uB); // Clamp any bound violations 
+        x0 = c.xClamped; // return clamped x0 solution
+
+        r = y.subtract(fnc(x0.value,x0.flatten())); // r=  y - y^ 
+        resultObj.itterationCost.push(r.rms()); // add to cost array 
+        resultObj.itterationValues.push(x0.flatten()); // add paramater to paramarter array 
+
+        if(checkConvergence(resultObj.itterationCost)) // has no benifical progress been made? 
+        {
+            resultObj.convergence = true; // a solution found 
+            break; 
+        }
+
+    }
+    resultObj.solution = x0; // store solution 
+    
+    return resultObj;
+
+}
+module.exports.bvlsFnc = bvlsFnc; 
+
+
+function bvlsMod(A,model,yTarget,lb,ub)
+{
+    //Prep initial variables 
+    var resultObj = {};
+    resultObj.convergence = false;
+    var lB = prepBound(A,lb); //Creates an array of bounds 
+    var uB = prepBound(A,ub);
+    var y = Matrixs.make(yTarget);
+    var J = Matrixs.make(A); 
+    J = J.multiply(-1); 
+    var A = Matrixs.make(A);
+
+    var x0 = Matrixs.make(A).lsq(yTarget); // Attempt vanilla solution 
+    var c = makeStriclyFeasible(x0.value,lB,uB);
+    
+    if( c.boundViolations.rms() == 0 ) // if no bounds hit 
+    {
+        console.log('no bound violations found');
+        return {solution:x0}; 
+    }
+    
+    x0 = c.xClamped; // return clamped x0 solution
+
+     r = y.subtract(fnc(x0.value,x0.flatten()));
+     resultObj.itterationCost = [r.rms()]; // inital cost 
+     resultObj.itterationValues = [x0.flatten()]; // This is the initial lsq clamped solution 
+
+    for(var i = 0; i < 50; i++)
+    {
+        r = y.subtract(fnc(x0.value,x0.flatten())); // r=  y - y^ 
+        var g = J.transpose().multiply(r); // Formulate g = J^T * r
+        var gDiag = Matrixs.makeDiag(g); // Make diag g
+        var res = getVjV(x0.value,g.value,lB,uB); //Determine v & J_v
+        var v = res[0];
+        var Jv = Matrixs.makeDiag(res[1]); 
+        //var D2 = Matrixs.makeDiag(v); // D^2 = diag(v)
+        var D2 = Matrixs.makeDiag(v.pow(-1));
+        
+        var H = J.transpose().multiply(J); // Hessian approximation H = J^T * J
+
+        // p = step = (D^2 * H + g * Jv)^(-1) * D^2 * g
+        //var step = D2.multiply(H).add(gDiag.multiply(Jv)).invert().multiply(D2.multiply(g)).multiply(-1);
+        var step = H.add(D2.multiply(gDiag.multiply(Jv))).invert().multiply(g).multiply(-1);
+
+        x0 = x0.add(step);
+
+        var c = makeStriclyFeasible(x0.value,lB,uB); // Clamp any bound violations 
+        x0 = c.xClamped; // return clamped x0 solution
+
+        r = y.subtract(fnc(x0.value,x0.flatten())); // r=  y - y^ 
+        resultObj.itterationCost.push(r.rms()); // add to cost array 
+        resultObj.itterationValues.push(x0.flatten()); // add paramater to paramarter array 
+
+        if(checkConvergence(resultObj.itterationCost)) // has no benifical progress been made? 
+        {
+            resultObj.convergence = true; // a solution found 
+            break; 
+        }
+
+    }
+    resultObj.solution = x0; // store solution 
+    
+    return resultObj;
+
+}
+module.exports.bvlsMod = bvlsMod; 
+
+
 
 function checkConvergence(ittCosts)
 {
@@ -99,7 +239,15 @@ function prepBound(y,bound)
     var boundMatrix = 0;
     if(!Array.isArray(bound))
     {
-        boundMatrix = Matrixs.zeros(y.length,1).add(bound).flatten();
+        if(A instanceof Matrixs)
+        {
+             boundMatrix = Matrixs.zeros(y.value[0].length,1).add(bound).flatten();
+        }
+        else
+        {
+            boundMatrix = Matrixs.zeros(y[0].length,1).add(bound).flatten();
+        }
+        
     }
     else{
         boundMatrix = bound;

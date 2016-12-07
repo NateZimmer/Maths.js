@@ -27,6 +27,19 @@ function matrix_delete_row(A,rowNum)
     return M; 
 }
 
+function matrix_delete_rows(A,start,end)
+{
+    var M = u.matrix_copy(A);
+    var startIndex = start; 
+    var numberDelete = end - start +1; 
+    for(var i =0; i < numberDelete; i++)
+    {
+        M = matrix_delete_row(M,startIndex);
+    }
+    return M; 
+}
+
+
 function matrix_delete_column(A,colNum)
 {
     var M = quick_transpose(A);
@@ -46,6 +59,18 @@ matrix.prototype.deleteRow = function(rowNum)
 matrix.deleteRow = function(A,rowNum)
 {
     return matrix.make(A).deleteRow(rowNum);
+}
+
+matrix.prototype.deleteRows = function(start,end)
+{
+    var M = matrix_delete_rows(this.value,start,end);
+    return matrix.make(M);
+};
+
+//Add to parent class 
+matrix.deleteRows = function(A,start,end)
+{
+    return matrix.make(A).deleteRows(start,end);
 }
 
 //Add to parent class 

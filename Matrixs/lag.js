@@ -5,6 +5,7 @@ require('./flatten');
 require('./shape');
 var matrix = require('./matrixs');
 
+var nullShiftValue = NaN; //Shift in NaN to make it obvious what data is invalid 
 
 function lag_matrix(A,start,end)
 {
@@ -18,7 +19,7 @@ function lag_matrix(A,start,end)
         var yCopy = Y.slice(); 
         for(var j = 0; j <iStart; j++)
         {
-            yCopy.unshift(0);
+            yCopy.unshift(nullShiftValue);
             yCopy.pop();
         }
         iStart++; 
@@ -42,7 +43,7 @@ function lag_matrix_trim(A,start,end)
         var yCopy = Y.slice(); 
         for(var j = 0; j <iStart; j++)
         {
-            yCopy.unshift(0);
+            yCopy.unshift(nullShiftValue);
             yCopy.pop();
         }
         iStart++; 

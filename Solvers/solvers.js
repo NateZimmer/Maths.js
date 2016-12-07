@@ -12,6 +12,9 @@ Solvers ={};
 Solvers.gaussNewton = require('./gaussNewton');
 Solvers.levenbergMarquardt = require('./levenbergMarquardt');
 Solvers.levenbergMarquardtFnc = require('./levenbergMarquardtFnc');
-Solvers.bvls = require('./lsqBounds.js');
+var bvls = require('./lsqBounds.js');
+Solvers.bvls = bvls.bvls;
+Solvers.bvlsFnc = bvls.bvlsFnc; 
+Solvers.util = require('./common.js');
 
 require('./lsqr.js');

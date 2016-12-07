@@ -80,6 +80,9 @@ function plots(inputObj,options)
 {
     activePlotIndex=0;
     plotArray = []; // Erase past data 
+
+    options = (typeof(options) == 'undefined') ? {} : options; // account for null case  
+
     plotOptions = options;
     var parsed = parse_data_obj(inputObj);
     var objTypes = parsed.type; 
@@ -88,7 +91,18 @@ function plots(inputObj,options)
     //handle_plot_bounds(inputObj,objTypes);
     parseOptions();
     packageData(inputObj,objTypes);
-    create_graph();
+    if(typeof(options.noDraw) != 'undefined')
+    {
+        if(options.noDraw == false)
+        {
+            create_graph();
+        }
+    }
+    else
+    {
+        create_graph();
+    }
+
 }
 Plots.create = plots;
 
@@ -96,6 +110,7 @@ Plots.create = plots;
 function add_plot(inputObj,options)
 {
     activePlotIndex++;
+    options = (typeof(options) == 'undefined') ? {} : options; // account for null case  
     plotOptions = options;
     var parsed = parse_data_obj(inputObj);
     var objTypes = parsed.type; 
@@ -104,9 +119,27 @@ function add_plot(inputObj,options)
     //handle_plot_bounds(inputObj,objTypes);
     parseOptions();
     packageData(inputObj,objTypes);
-    create_graph();
+
+    if(typeof(options.noDraw) != 'undefined')
+    {
+        if(options.noDraw == false)
+        {
+            create_graph();
+        }
+    }
+    else
+    {
+        create_graph();
+    }
+
 }
 Plots.add = add_plot;
+
+function redraw_plot(options)
+{
+      create_graph();
+}
+Plots.reDraw = redraw_plot;
 
 
 module.exports = Plots;
@@ -330,6 +363,12 @@ function parseOptions()
             plotType = 'scatter';
             plotArray[activePlotIndex] = cloneObj(defaultScatterObj);
         }
+        else if (plotOptions.type=='spline')
+        {
+            plotOptions.type ='line';
+            plotArray[activePlotIndex] = cloneObj(defaultLineObj);
+            plotArray[activePlotIndex].line.shape='spline';
+        }
         else
         {
             plotArray[activePlotIndex] = cloneObj(defaultLineObj);
@@ -386,6 +425,15 @@ function parseOptions()
         }  
     }
 
+
+    if((typeof plotOptions.symbol) != 'undefined')
+    {
+        if((plotType == 'scatter'))
+        {
+            plotArray[activePlotIndex].marker.symbol = plotOptions.symbol;
+        }  
+    }
+
     if((typeof plotOptions.colorscale) != 'undefined')
     {
          plotArray[activePlotIndex].marker.colorscale = plotOptions.colorscale;
@@ -433,13 +481,18 @@ function create_graph()
                 createPlotDiv();
             }
             Plotly.purge('plotDiv');
-            graph = Plotly.newPlot('plotDiv', plotArray,plotyLayout,{displayModeBar: false});
+            graph = Plotly.newPlot('plotDiv', plotArray,JSON.parse(JSON.stringify(plotyLayout)),{displayModeBar: false});
     }
     else
     {
         Plotly.purge(plotOptions.div);
-        graph = Plotly.newPlot(plotOptions.div, plotArray,plotyLayout,{displayModeBar: false});
+        graph = Plotly.newPlot(plotOptions.div, plotArray,JSON.parse(JSON.stringify(plotyLayout)),{displayModeBar: false});
     }
 
     
+}
+
+function addTrace()
+{
+    graph = Plotly.addTraces(plotOptions.div, plotArray[plotArray.length-1]); // add latest trace to graph 
 }

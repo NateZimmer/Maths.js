@@ -80,6 +80,8 @@ function matrix_round(A,d)
     return M;
 }
 
+
+
 // Add functions to parent class 
 matrix.prototype.mean = function()
 {
@@ -125,4 +127,21 @@ matrix.prototype.round = function(d)
 {
     var M = matrix_round(this.value,d);
     return matrix.make(M);
+};
+
+function matrix_fit(A,B)
+{
+    var M1 = matrix.make(A);
+    var M2 = matrix.make(B);
+
+    var denom = M1.subtract(M1.mean()).rms();
+    var num = M1.subtract(M2).rms();
+    var fitness = 100*(1 - num/denom);
+    return fitness; 
+}
+
+matrix.prototype.fitness = function(A)
+{
+    var fit = matrix_fit(this,Matrixs.make(A));
+    return fit;
 };

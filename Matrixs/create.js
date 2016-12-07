@@ -107,6 +107,15 @@ function matrix_ident(m,n)
     return M;
 }
 
+matrix.prototype.clone = function()
+{
+    return matrix.make(U.matrix_copy(this.value));
+}
+
+matrix.clone = function(A)
+{
+    return matrix.make(A).clone();
+}
 
 matrix.range = function(min,step,max)
 {
