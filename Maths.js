@@ -422,6 +422,33 @@ function matrix_delete_column(A,colNum)
     return M; 
 }
 
+
+function matrixs_decimate(A,decNumber)
+{
+    var M = [];
+    var deci = (decNumber ==0) ? 1 : decNumber;
+
+    for(var i = 0; i <A.length; i++)
+    {
+        if(i % decNumber == 0)
+        {
+            M.push(A[i])
+        }
+    }
+    return M;
+}
+
+matrix.prototype.decimate = function(decNumber)
+{
+    var M = matrixs_decimate(this.value,decNumber);
+    return matrix.make(M);
+};
+
+matrix.decimate = function(A,decNumber)
+{
+    return matrix.make(A).decimate(decNumber);
+}
+
 //Add to parent class 
 matrix.prototype.deleteRow = function(rowNum)
 {
@@ -2688,7 +2715,7 @@ plotyLayout = {
 };
 
 
-var defaultScatterObj = {
+defaultScatterObj = {
     x :[],
     y :[],
     mode : 'markers',
@@ -2699,7 +2726,7 @@ var defaultScatterObj = {
     } 
 }
 
-var defaultLineObj = {
+defaultLineObj = {
     x :[],
     y :[],
     mode : 'lines',

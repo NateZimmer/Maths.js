@@ -48,7 +48,7 @@ plotyLayout = {
 };
 
 
-var defaultScatterObj = {
+defaultScatterObj = {
     x :[],
     y :[],
     mode : 'markers',
@@ -59,7 +59,7 @@ var defaultScatterObj = {
     } 
 }
 
-var defaultLineObj = {
+defaultLineObj = {
     x :[],
     y :[],
     mode : 'lines',
