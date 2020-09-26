@@ -6,6 +6,9 @@ Navigation: <a href='https://natezimmer.github.io/Maths.js'>Docs/Reference</a> |
 </strong>
 </p>
 
+
+[![Build Status](https://travis-ci.com/NateZimmer/Maths.js.svg?branch=master)](https://travis-ci.com/NateZimmer/Maths.js.svg?branch=master) [![Coverage Status](https://coveralls.io/repos/github/NateZimmer/Maths.js/badge.svg?branch=master)](https://coveralls.io/github/NateZimmer/Maths.js?branch=master) [![MIT license](http://img.shields.io/badge/license-MIT-brightgreen.svg)](http://opensource.org/licenses/MIT)
+
 ## Math-Script
 A math library for JS with an emphasis on matrix operations, non linear solvers, visualizations, and **overload support**!.
 ```js
