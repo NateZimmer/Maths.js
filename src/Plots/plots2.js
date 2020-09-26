@@ -1,6 +1,6 @@
 
 
-var matrix = require('../src/matrix_lib.js');
+var matrix = require('../matrix_lib.js');
 
 var plotColorArrayScatter = ['rgba(0,100,200,0.2)','rgba(200,0,100,0.2)'];
 var plotColorArrayLine = ['rgba(0,100,200,0.9)','rgba(200,0,100,0.9)'];

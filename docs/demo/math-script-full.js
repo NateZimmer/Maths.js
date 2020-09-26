@@ -14456,6 +14456,454 @@ exports.SourceMapConsumer = require('./lib/source-map-consumer').SourceMapConsum
 exports.SourceNode = require('./lib/source-node').SourceNode;
 
 },{"./lib/source-map-consumer":18,"./lib/source-map-generator":19,"./lib/source-node":20}],23:[function(require,module,exports){
+
+
+var matrix = require('../matrix_lib.js');
+
+var plotColorArrayScatter = ['rgba(0,100,200,0.2)','rgba(200,0,100,0.2)'];
+var plotColorArrayLine = ['rgba(0,100,200,0.9)','rgba(200,0,100,0.9)'];
+	
+var yOverBound =1.1; 
+var yUnderBound = 0.9;
+var plotDataObjs = [];
+var activePlotIndex = 0;
+var plotArray = [];
+var plotOptions = {};
+
+Plots ={};
+
+plotyLayout = { 
+    paper_bgcolor: 'transparent',
+    plot_bgcolor: 'transparent',
+    color: '#DDD',
+    xaxis: {
+            fixedrange: true
+            },
+    yaxis: {
+        fixedrange:true,
+    },
+    height:250,
+    width:500,
+    margin: {
+        l:40,
+        r:5,
+        b:30,
+        t:5,
+        pad:4
+    },
+    legend: {
+        x:0.1,
+        y:1
+    }
+};
+
+
+defaultScatterObj = {
+    x :[],
+    y :[],
+    mode : 'markers',
+    marker :{
+        size : 20,
+        colorscale : 'Viridis',
+        opacity : 0.5,
+    } 
+}
+
+defaultLineObj = {
+    x :[],
+    y :[],
+    mode : 'lines',
+    color : 'rgba(255,0,0,1)',
+    line : {},
+
+}
+
+
+function cloneObj(obj)
+{
+    return JSON.parse(JSON.stringify(obj));
+}
+
+
+// Highest level function for plot 
+function plots(inputObj,options)
+{
+    activePlotIndex=0;
+    plotArray = []; // Erase past data 
+
+    options = (typeof(options) == 'undefined') ? {} : options; // account for null case  
+
+    plotOptions = options;
+    var parsed = parse_data_obj(inputObj);
+    var objTypes = parsed.type; 
+    var inputObj = parsed.input; 
+    prep_plot_data(inputObj,objTypes);
+    //handle_plot_bounds(inputObj,objTypes);
+    parseOptions();
+    packageData(inputObj,objTypes);
+    if(typeof(options.noDraw) != 'undefined')
+    {
+        if(options.noDraw == false)
+        {
+            create_graph();
+        }
+    }
+    else
+    {
+        create_graph();
+    }
+
+}
+Plots.create = plots;
+
+
+function add_plot(inputObj,options)
+{
+    activePlotIndex++;
+    options = (typeof(options) == 'undefined') ? {} : options; // account for null case  
+    plotOptions = options;
+    var parsed = parse_data_obj(inputObj);
+    var objTypes = parsed.type; 
+    var inputObj = parsed.input; 
+    prep_plot_data(inputObj,objTypes);
+    //handle_plot_bounds(inputObj,objTypes);
+    parseOptions();
+    packageData(inputObj,objTypes);
+
+    if(typeof(options.noDraw) != 'undefined')
+    {
+        if(options.noDraw == false)
+        {
+            create_graph();
+        }
+    }
+    else
+    {
+        create_graph();
+    }
+
+}
+Plots.add = add_plot;
+
+function redraw_plot(options)
+{
+      create_graph();
+}
+Plots.reDraw = redraw_plot;
+
+
+function extendUpperBound(bound)
+{
+    var returnValue = 0; 
+    if(bound>0)
+    {
+        returnValue = yOverBound*bound;
+    }
+    else if(bound==0)
+    {
+        returnValue = 1; 
+    } 
+    else
+    {
+        returnValue = (1+(1-yOverBound))*bound;
+    }
+    return returnValue;
+}
+
+function extendLowerBound(bound)
+{
+    var returnValue = 0; 
+    if(bound>0)
+    {
+        returnValue = yUnderBound*bound;
+    }
+    else if(bound==0)
+    {
+        returnValue = -1; 
+    } 
+    else
+    {
+        returnValue = (1+(1-yUnderBound))*bound;
+    }
+    return returnValue;
+}
+
+function parse_data_obj(inputObj)
+{
+    var objType = 'null';
+
+    if(inputObj instanceof matrix)
+    {
+        objType = 'Single matrix';
+    }
+    else if(Array.isArray(inputObj))
+    {
+        var numMatrixs = inputObj.filter(function(value){ return (value instanceof matrix)}).length;
+        if(numMatrixs==0)
+        {
+            objType = 'Single matrix';
+            inputObj = matrix.make(inputObj);
+        }
+        else if(numMatrixs==1)
+        {
+            objType = 'Single matrix';
+            inputObj = matrix.make(inputObj[0]);
+        }
+        else if(numMatrixs>1)
+        {
+            objType = 'Multiple matrix';
+        } 
+    }
+    return {type:objType, input:inputObj};
+}
+
+function prep_plot_data(dataObj,objType)
+{
+    if(objType == 'Single matrix')
+    {
+        if(!Array.isArray(dataObj)) {
+            dataObj = [dataObj]; // Make into array 
+        }
+    }
+
+    for(var i = 0; i < dataObj.length; i++)
+    {
+        var M = dataObj[i]; 
+        var shape = M.shape();
+        if(shape[0]<shape[1])
+        {
+            M = M.transpose(); // Make column matrix 
+        }
+        dataObj[i] = M; 
+    }
+}
+
+
+function getColorArray(localObj)
+{
+    var dataSize = localObj.x.length;
+    var M = matrix.range(dataSize).flatten();  
+    
+    return M;
+}
+
+
+// This function preps data for FLOTR2
+function packageData(dataObj,objType)
+{
+    // It is assumed that datOBj is in a array; 
+    var localData = null; 
+
+    if(objType == 'Single matrix')
+    {
+        var localObj = {};
+        
+        if(Array.isArray(dataObj))
+        {
+            localData = dataObj[0];
+        }
+        else
+        {
+             localData = dataObj;
+        }
+       
+        var dimensions = localData.shape()[1];
+        var points = localData.shape()[0];
+
+        if(dimensions==1)
+        {
+            var A = matrix.range(points);
+            plotArray[activePlotIndex].x = A.flatten();
+            plotArray[activePlotIndex].y = localData.flatten();
+
+        }
+        else // Assumes in proper format already
+        {
+             localObj.data = localData.value; 
+        }
+    }
+    else
+    {
+        plotArray[activePlotIndex].x = dataObj[0].flatten();
+        plotArray[activePlotIndex].y = dataObj[1].flatten();
+
+        if((typeof dataObj[2]) !='undefined')
+        {
+            plotArray[activePlotIndex].type = 'scatter3d';
+            plotArray[activePlotIndex].z = dataObj[2].flatten();
+        }
+
+    }
+    var points = plotArray[activePlotIndex].x.length; 
+
+    if((plotOptions.color == null) && (plotOptions.type=='scatter'))
+    {
+        plotArray[activePlotIndex].marker.color = plotArray[activePlotIndex].x;
+    }
+
+     if(plotOptions.type=='scatter')
+    {
+        var markerSize = plotArray[activePlotIndex].marker.size; 
+        plotArray[activePlotIndex].marker.size = matrix.zeros(points).add(markerSize).flatten();
+    }
+
+}
+
+function parseOptions()
+{
+    var plotType = 'lines';
+    if((typeof plotOptions) == 'undefined')
+    {
+        plotArray[activePlotIndex] = cloneObj(defaultLineObj);
+        plotOptions = {};
+    }
+
+    if((typeof plotOptions.type) != 'undefined')
+    {
+        if(plotOptions.type=='scatter')
+        {
+            plotType = 'scatter';
+            plotArray[activePlotIndex] = cloneObj(defaultScatterObj);
+        }
+        else if (plotOptions.type=='spline')
+        {
+            plotOptions.type ='line';
+            plotArray[activePlotIndex] = cloneObj(defaultLineObj);
+            plotArray[activePlotIndex].line.shape='spline';
+        }
+        else
+        {
+            plotArray[activePlotIndex] = cloneObj(defaultLineObj);
+        }
+    }
+    else
+    {
+        plotOptions.type ='line';
+        plotArray[activePlotIndex] = cloneObj(defaultLineObj);
+    }  
+
+    if((typeof plotOptions.color) != 'undefined')
+    {
+        if((plotType == 'scatter'))
+        {
+            plotArray[activePlotIndex].marker.color = plotOptions.color;
+        }
+        else
+        {
+            plotArray[activePlotIndex].line.color = plotOptions.color;
+        }  
+    }
+    else
+    {
+        plotOptions.color = null; 
+    }
+    
+
+    if((typeof plotOptions.opacity) != 'undefined')
+    {
+        if((plotType == 'scatter'))
+        {
+            plotArray[activePlotIndex].marker.opacity = plotOptions.opacity;
+        }
+        else
+        {
+             plotArray[activePlotIndex].opacity = plotOptions.opacity;
+        }  
+    }
+    else
+    {
+        plotOptions.opacity = null; 
+    }
+
+    if((typeof plotOptions.size) != 'undefined')
+    {
+        if((plotType == 'scatter'))
+        {
+            plotArray[activePlotIndex].marker.size = plotOptions.size;
+        }
+        else
+        {
+            plotArray[activePlotIndex].line.width =  plotOptions.size;
+        }  
+    }
+
+
+    if((typeof plotOptions.symbol) != 'undefined')
+    {
+        if((plotType == 'scatter'))
+        {
+            plotArray[activePlotIndex].marker.symbol = plotOptions.symbol;
+        }  
+    }
+
+    if((typeof plotOptions.colorscale) != 'undefined')
+    {
+         plotArray[activePlotIndex].marker.colorscale = plotOptions.colorscale;
+    }
+
+    if((typeof plotOptions.name) != 'undefined')
+    {
+         plotArray[activePlotIndex].name = plotOptions.name;
+    }
+
+    if(typeof(plotyLayout.title) !='undefined')
+    {
+        if(plotyLayout.margin.t<25)
+        {
+            plotyLayout.margin.t = 25;
+        }
+    }
+   
+}
+
+
+function createPlotDiv()
+{
+        var iDiv = document.createElement('div');
+        iDiv.id = 'plotDiv';
+        iDiv.style.width='700px';
+        iDiv.style.height='400px';
+        iDiv.style.display='inline-block';
+        document.body.style.textAlign ='center';
+        document.getElementsByTagName('body')[0].appendChild(iDiv);
+}
+
+
+function create_graph()
+{
+    if((typeof Ploty) == 'undefined')
+    {
+        var Ploty = {};
+    }
+
+    
+    
+    var plot_div_id = plotOptions.div == null ? 'plotDiv' : plotOptions.div;
+    var plot_div_dom = document.querySelector('#'+plot_div_id);
+
+    if(plot_div_dom == null){
+        createPlotDiv();
+    }
+    Plotly.purge(plot_div_id);
+    handle_auto_size(plot_div_id);
+    graph = Plotly.newPlot(plot_div_id, plotArray,JSON.parse(JSON.stringify(plotyLayout)),{displayModeBar: false});
+    
+}
+
+
+function handle_auto_size(plotDivID){
+    var divs = document.querySelector('#'+plotDivID);
+    if(plotOptions.height == null){
+        plotyLayout.height = divs.getBoundingClientRect().height;
+    }
+    if(plotOptions.width == null){
+        plotyLayout.width = divs.getBoundingClientRect().width;
+    }    
+
+}
+
+module.exports = Plots;
+},{"../matrix_lib.js":46}],24:[function(require,module,exports){
 /**
  * @classdesc A library for adding a scalar/array/matrix to a scalar/array/matrix. This library will always return matrix type.   
  * @class matrix/add
@@ -14575,7 +15023,7 @@ matrix.prototype.__plus = function(x)
 matrix.numberOverrides.__plus = function(x){
 	return matrix.make(x).add(this);
 }
-},{"../matrix":44,"./mUtils":35}],24:[function(require,module,exports){
+},{"../matrix":45,"./mUtils":36}],25:[function(require,module,exports){
 var matrix = require('../matrix');
 
 // applies a function to every element of a matrix
@@ -14609,7 +15057,7 @@ matrix.apply = function(A,fnc)
 {
     return matrix.make(A).apply(fnc);
 }
-},{"../matrix":44}],25:[function(require,module,exports){
+},{"../matrix":45}],26:[function(require,module,exports){
 /**
  * @classdesc A collection of matrix utility functions 
  * @class matrix/other
@@ -14678,7 +15126,7 @@ matrix.checkBounds = function(A,lb,ub)
 {
     return matrix.make(A).checkBounds(lb,ub);
 }
-},{"../matrix":44}],26:[function(require,module,exports){
+},{"../matrix":45}],27:[function(require,module,exports){
 /**
  * @classdesc Matrix creation utilities 
  * @class matrix/create
@@ -14874,7 +15322,7 @@ matrix.zeros = function(m,n)
 {
     return matrix.make(matrix_zeros(m,n));
 }
-},{"../matrix":44,"./mUtils":35}],27:[function(require,module,exports){
+},{"../matrix":45,"./mUtils":36}],28:[function(require,module,exports){
 var u = require('./mUtils');
 var matrix = require('../matrix');
 
@@ -14981,7 +15429,7 @@ matrix.deleteCol = function(A,colNum)
 {
     return matrix.make(A).deleteCol(colNum);
 }
-},{"../matrix":44,"./mUtils":35}],28:[function(require,module,exports){
+},{"../matrix":45,"./mUtils":36}],29:[function(require,module,exports){
 var matrix = require('../matrix');
 
 //Returns the diagonal elements of a matrix; 
@@ -15050,7 +15498,7 @@ matrix.diag = function(A)
 }
 
 
-},{"../matrix":44}],29:[function(require,module,exports){
+},{"../matrix":45}],30:[function(require,module,exports){
 var matrix = require('../matrix');
 require('./shape');
 
@@ -15097,7 +15545,7 @@ matrix.divide = function(A,B)
 {
     return matrix.make(A).divide(matrix.make(B));
 }
-},{"../matrix":44,"./shape":40}],30:[function(require,module,exports){
+},{"../matrix":45,"./shape":41}],31:[function(require,module,exports){
 var M = require('../matrix');
 var overload = require('operator-overloading-nz-fork');
 
@@ -15111,7 +15559,7 @@ function execute(functionPtr){
 }
 
 M.execute = execute;
-},{"../matrix":44,"operator-overloading-nz-fork":10}],31:[function(require,module,exports){
+},{"../matrix":45,"operator-overloading-nz-fork":10}],32:[function(require,module,exports){
 var matrix = require('../matrix');
 require('./transpose');
 
@@ -15156,7 +15604,7 @@ matrix.fill = function(A,m,n)
 {
     return matrix.make(A).fill(m,n);
 }
-},{"../matrix":44,"./transpose":43}],32:[function(require,module,exports){
+},{"../matrix":45,"./transpose":44}],33:[function(require,module,exports){
 var matrix = require('../matrix');
 
 // Changes from 2D to 1D: [[1,2,3]] --> [1,2,3]
@@ -15187,7 +15635,7 @@ matrix.flatten = function(A)
 {
     return matrix.make(A).flatten();
 }
-},{"../matrix":44}],33:[function(require,module,exports){
+},{"../matrix":45}],34:[function(require,module,exports){
 /**
  * @classdesc A library for inverting matrices and pseudo inverse
  * @class matrix/invert
@@ -15698,7 +16146,7 @@ function svd(A) {
 	return {U:u,S:q,V:v}
 };
 
-},{"../matrix":44,"./mUtils":35}],34:[function(require,module,exports){
+},{"../matrix":45,"./mUtils":36}],35:[function(require,module,exports){
 
 var U = require('./mUtils');
 require('./transpose');
@@ -15785,7 +16233,7 @@ matrix.lagTrim = function(A,start,end)
     return new matrix(matrix.make(A).lagTrim(start,end));
 }
 
-},{"../matrix":44,"./flatten":32,"./mUtils":35,"./shape":40,"./transpose":43}],35:[function(require,module,exports){
+},{"../matrix":45,"./flatten":33,"./mUtils":36,"./shape":41,"./transpose":44}],36:[function(require,module,exports){
 /*
 MIT License (MIT)
 Copyright (c) 2016 Nathan Zimmerman
@@ -16034,7 +16482,7 @@ function matrix_copy(M)
     return M_Array;
 }
 module.exports.matrix_copy = matrix_copy; 
-},{}],36:[function(require,module,exports){
+},{}],37:[function(require,module,exports){
 /**
  * @classdesc A library for multiplying a scalar/array/matrix to a scalar/array/matrix. This library will always return matrix type.   
  * @class matrix/multiply
@@ -16217,7 +16665,7 @@ matrix.numberOverrides.__multiply = function (x) {
 
 
 
-},{"../matrix":44,"./mUtils":35}],37:[function(require,module,exports){
+},{"../matrix":45,"./mUtils":36}],38:[function(require,module,exports){
 /**
  * @classdesc Compute the exponent of matrices 
  * @class matrix/exponent 
@@ -16320,7 +16768,7 @@ matrix.numberOverrides.__exponent = function(x){
     return matrix.make(x).pow(this);
 }
 
-},{"../matrix":44}],38:[function(require,module,exports){
+},{"../matrix":45}],39:[function(require,module,exports){
 var matrix = require('../matrix');
 
 //Print matrix 
@@ -16374,7 +16822,7 @@ matrix.prototype.toString = function()
 {
     return print_matrix(this.value);
 };
-},{"../matrix":44}],39:[function(require,module,exports){
+},{"../matrix":45}],40:[function(require,module,exports){
 var matrix = require('../matrix');
 require('./stats');
 
@@ -16492,7 +16940,7 @@ matrix.randn = function(m,n)
 {
     return matrix.make(matrix_randn(m,n));
 }
-},{"../matrix":44,"./stats":41}],40:[function(require,module,exports){
+},{"../matrix":45,"./stats":42}],41:[function(require,module,exports){
 /**
  * @classdesc Utilities for re-shaping matrices 
  * @class matrix/shaping
@@ -16718,7 +17166,7 @@ matrix.row = function(A,start)
 {
     return new matrix(matrix_get_rows(matrix.make(A).value,start));
 }
-},{"../matrix":44,"./mUtils":35}],41:[function(require,module,exports){
+},{"../matrix":45,"./mUtils":36}],42:[function(require,module,exports){
 //This is a clobber file of basic primitive funcitons such as a matrix mean, sum, min, max...ect 
 var u = require('./mUtils');
 var matrix = require('../matrix');
@@ -16919,7 +17367,7 @@ matrix.prototype.fitness = function(A)
     return fit;
 };
 
-},{"../matrix":44,"./mUtils":35}],42:[function(require,module,exports){
+},{"../matrix":45,"./mUtils":36}],43:[function(require,module,exports){
 var U = require('./mUtils');
 var matrix = require('../matrix');
 var addM = require('./add');
@@ -16992,7 +17440,7 @@ matrix.prototype.__minus = function(x)
 matrix.numberOverrides.__minus = function(x){
 	return matrix.make(x).subtract(this);
 }
-},{"../matrix":44,"./add":23,"./mUtils":35}],43:[function(require,module,exports){
+},{"../matrix":45,"./add":24,"./mUtils":36}],44:[function(require,module,exports){
 var matrix = require('../matrix');
 
 // Returns Transpose of matrix
@@ -17036,7 +17484,7 @@ matrix.t = function(A)
 {
     return matrix.make(A).transpose();
 }
-},{"../matrix":44}],44:[function(require,module,exports){
+},{"../matrix":45}],45:[function(require,module,exports){
 var U = require('./lib/mUtils');
 
 
@@ -17074,7 +17522,7 @@ matrix.make = function(M)
 matrix.numberOverrides = {};
 
 module.exports = matrix;
-},{"./lib/mUtils":35}],45:[function(require,module,exports){
+},{"./lib/mUtils":36}],46:[function(require,module,exports){
 
 
 require('./lib/add');
@@ -17102,4 +17550,12 @@ var M = require('./matrix');
 M.util = require('./lib/mUtils');
 
 module.exports = M; 
-},{"./lib/add":23,"./lib/apply":24,"./lib/bound":25,"./lib/create":26,"./lib/delete":27,"./lib/diag":28,"./lib/divide":29,"./lib/execute":30,"./lib/fill":31,"./lib/flatten":32,"./lib/invert":33,"./lib/lag":34,"./lib/mUtils":35,"./lib/multiply":36,"./lib/pow":37,"./lib/print":38,"./lib/random":39,"./lib/shape":40,"./lib/stats":41,"./lib/subtract":42,"./lib/transpose":43,"./matrix":44}]},{},[45]);
+},{"./lib/add":24,"./lib/apply":25,"./lib/bound":26,"./lib/create":27,"./lib/delete":28,"./lib/diag":29,"./lib/divide":30,"./lib/execute":31,"./lib/fill":32,"./lib/flatten":33,"./lib/invert":34,"./lib/lag":35,"./lib/mUtils":36,"./lib/multiply":37,"./lib/pow":38,"./lib/print":39,"./lib/random":40,"./lib/shape":41,"./lib/stats":42,"./lib/subtract":43,"./lib/transpose":44,"./matrix":45}],47:[function(require,module,exports){
+
+
+//require('./Matrixs/matrix');
+//require('./Solvers/solvers');
+//require('./Models/models');
+Plots = require('./Plots/plots2');
+Matrix = require('./matrix_lib');
+},{"./Plots/plots2":23,"./matrix_lib":46}]},{},[47]);

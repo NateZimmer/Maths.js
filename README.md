@@ -2,7 +2,7 @@
 <img src ="https://raw.githubusercontent.com/NateZimmer/Maths.js/master/Images/BannerImage.png">
 </p>
 <p align="center"><strong> 
-Navigation: <a href='https://natezimmer.github.io/maths.js.io'>Docs/Reference</a> | <a href='https://natezimmer.github.io/maths.js.io/demo/index.html'>Demo Playground</a> | <a href='https://github.com/NateZimmer/Maths.js'>Github Source</a> 
+Navigation: <a href='https://natezimmer.github.io/Maths.js'>Docs/Reference</a> | <a href='https://natezimmer.github.io/Maths.js/demo/index.html'>Demo Playground</a> | <a href='https://github.com/NateZimmer/Maths.js'>Github Source</a> 
 </strong>
 </p>
 
@@ -24,7 +24,7 @@ M.execute(function(M){
 **Core features:**
 
 - Matrix operations operator support in execute environment `*, +, **, -`
-- Feature rich [M,N] matrix operation support, see [reference](https://natezimmer.github.io/maths.js.io) 
+- Feature rich [M,N] matrix operation support, see [reference](https://natezimmer.github.io/Maths.js) 
 - SVD support / Nonlinear solvers  
 
 ## Install
@@ -35,13 +35,16 @@ M.execute(function(M){
 npm install math-script 
 ```
 **Browser minimal:**
+
+See [dist](https://github.com/NateZimmer/Maths.js/tree/master/dist) folder for files
+
 ```html
-<script type="text/javascript" src="Maths.js"></script>
+<script type="text/javascript" src="math-script.js"></script>
 ```
 **Math-Script with Plotting**
 ```html
-<script type="text/javascript" src="plotly.min.js"></script>
-<script type="text/javascript" src="Maths.js"></script>
+<script type="text/javascript" src="plotly.min1.19.2.js"></script> 
+<script type="text/javascript" src="math-script-full.js"></script>
 ```
 
 

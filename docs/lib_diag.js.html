@@ -1,0 +1,140 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    
+    <meta charset="utf-8">
+    <title>lib/diag.js - Documentation</title>
+    
+    
+    <script src="scripts/prettify/prettify.js"></script>
+    <script src="scripts/prettify/lang-css.js"></script>
+    <!--[if lt IE 9]>
+      <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+    <link type="text/css" rel="stylesheet" href="styles/prettify.css">
+    <link type="text/css" rel="stylesheet" href="styles/jsdoc.css">
+    <script src="scripts/nav.js" defer></script>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+</head>
+<body>
+
+<input type="checkbox" id="nav-trigger" class="nav-trigger" />
+<label for="nav-trigger" class="navicon-button x">
+  <div class="navicon"></div>
+</label>
+
+<label for="nav-trigger" class="overlay"></label>
+
+<nav >
+    
+    <input type="text" id="nav-search" placeholder="Search" />
+    
+    <h2><a href="index.html">Home</a></h2><h3>Classes</h3><ul><li><a href="matrix_add.html">matrix/add</a><ul class='methods'><li data-type='method'><a href="matrix_add.html#.add">add</a></li><li data-type='method'><a href="matrix_add.html#.subtract">subtract</a></li><li data-type='method'><a href="matrix_add.html#.subtract">subtract</a></li><li data-type='method'><a href="matrix_add.html#.add">add</a></li></ul></li><li></li><li><a href="matrix_create.html">matrix/create</a><ul class='methods'><li data-type='method'><a href="matrix_create.html#.clone">clone</a></li><li data-type='method'><a href="matrix_create.html#.clone">clone</a></li><li data-type='method'><a href="matrix_create.html#.ident">ident</a></li><li data-type='method'><a href="matrix_create.html#.ident">ident</a></li><li data-type='method'><a href="matrix_create.html#.ones">ones</a></li><li data-type='method'><a href="matrix_create.html#.ones">ones</a></li><li data-type='method'><a href="matrix_create.html#.range">range</a></li><li data-type='method'><a href="matrix_create.html#.range">range</a></li><li data-type='method'><a href="matrix_create.html#.zeros">zeros</a></li><li data-type='method'><a href="matrix_create.html#.zeros">zeros</a></li></ul></li><li></li><li><a href="matrix_exponent.html">matrix/exponent</a><ul class='methods'><li data-type='method'><a href="matrix_exponent.html#.pow">pow</a></li><li data-type='method'><a href="matrix_exponent.html#.pow">pow</a></li></ul></li><li></li><li><a href="matrix_invert.html">matrix/invert</a><ul class='methods'><li data-type='method'><a href="matrix_invert.html#.invert">invert</a></li><li data-type='method'><a href="matrix_invert.html#.invert">invert</a></li><li data-type='method'><a href="matrix_invert.html#.pinv">pinv</a></li><li data-type='method'><a href="matrix_invert.html#.pinv">pinv</a></li></ul></li><li></li><li><a href="matrix_multiply.html">matrix/multiply</a><ul class='methods'><li data-type='method'><a href="matrix_multiply.html#.multiply">multiply</a></li><li data-type='method'><a href="matrix_multiply.html#.multiply">multiply</a></li></ul></li><li></li><li><a href="matrix_other.html">matrix/other</a><ul class='methods'><li data-type='method'><a href="matrix_other.html#.checkBounds">checkBounds</a></li><li data-type='method'><a href="matrix_other.html#.checkBounds">checkBounds</a></li><li data-type='method'><a href="matrix_other.html#.diag">diag</a></li><li data-type='method'><a href="matrix_other.html#.diag">diag</a></li><li data-type='method'><a href="matrix_other.html#.flatten">flatten</a></li><li data-type='method'><a href="matrix_other.html#.flatten">flatten</a></li><li data-type='method'><a href="matrix_other.html#.length">length</a></li><li data-type='method'><a href="matrix_other.html#.length">length</a></li><li data-type='method'><a href="matrix_other.html#.max">max</a></li><li data-type='method'><a href="matrix_other.html#.max">max</a></li><li data-type='method'><a href="matrix_other.html#.min">min</a></li><li data-type='method'><a href="matrix_other.html#.min">min</a></li><li data-type='method'><a href="matrix_other.html#.print">print</a></li><li data-type='method'><a href="matrix_other.html#.print">print</a></li><li data-type='method'><a href="matrix_other.html#.round">round</a></li><li data-type='method'><a href="matrix_other.html#.round">round</a></li><li data-type='method'><a href="matrix_other.html#.sum">sum</a></li><li data-type='method'><a href="matrix_other.html#.sum">sum</a></li></ul></li><li></li><li><a href="matrix_shaping.html">matrix/shaping</a><ul class='methods'><li data-type='method'><a href="matrix_shaping.html#.catH">catH</a></li><li data-type='method'><a href="matrix_shaping.html#.catH">catH</a></li><li data-type='method'><a href="matrix_shaping.html#.catV">catV</a></li><li data-type='method'><a href="matrix_shaping.html#.catV">catV</a></li><li data-type='method'><a href="matrix_shaping.html#.size">size</a></li><li data-type='method'><a href="matrix_shaping.html#.size">size</a></li></ul></li><li></li></ul>
+</nav>
+
+<div id="main">
+    
+    <h1 class="page-title">lib/diag.js</h1>
+    
+
+    
+
+
+
+    
+    <section>
+        <article>
+            <pre class="prettyprint source linenums"><code>var matrix = require('../matrix');
+
+//Returns the diagonal elements of a matrix; 
+/*
+function matrix_diag(A){
+    var M = []; //Prep new matrix 
+
+    for(var i=0; i&lt;A.length;i++)
+    {
+        M[i] = [];
+        for(var j = 0; j &lt;A.length; j++)
+        {
+            M[i][j] =  (i==j) ? A[i][j] : 0; 
+        }
+    }
+    return M;
+}
+*/
+
+function make_diag(A)
+{
+    var M = [];
+    var xLocal = matrix.make(A);
+    if(xLocal.shape()[0]&lt;xLocal.shape()[1])
+    {
+        xLocal = xLocal.transpose();
+    }
+    xLocal = xLocal.value;
+
+    for(var i = 0; i &lt; xLocal.length; i++)
+    {
+        M[i]= [];
+        for(var j = 0; j &lt; xLocal.length; j++)
+        {
+            var diagVal = (i==j) ? xLocal[i][0] : 0;
+            M[i][j] = diagVal;
+        }
+    }
+    return M;
+}
+
+//Add to parent class 
+/**
+ * Converts a column/row matrix into a diagonal 2d matrix 
+ * @function diag
+ * @returns {matrix}
+ * @memberof matrix/other
+ * @example
+ * var M = require('./src/matrix_lib');
+ * console.log(M.range(3).diag().print());
+ * //0.000           0.000           0.000
+ * //0.000           1.000           0.000
+ * //0.000           0.000           2.000
+ */
+matrix.prototype.diag = function()
+{
+    var M = make_diag(this.value);
+    return matrix.make(M);
+};
+
+
+//Add to parent class 
+matrix.diag = function(A)
+{
+    return matrix.make(A).diag();
+}
+
+</code></pre>
+        </article>
+    </section>
+
+
+
+
+    
+    
+</div>
+
+<br class="clear">
+
+<footer>
+    Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.6.6</a> on Fri Sep 25 2020 21:51:33 GMT-0500 (Central Daylight Time) using the <a href="https://github.com/clenemt/docdash">docdash</a> theme.
+</footer>
+
+<script>prettyPrint();</script>
+<script src="scripts/polyfill.js"></script>
+<script src="scripts/linenumber.js"></script>
+
+<script src="scripts/search.js" defer></script>
+
+
+
+</body>
+</html>

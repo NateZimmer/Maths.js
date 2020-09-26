@@ -5,10 +5,11 @@
   "main": "src/matrix_lib.js",
   "scripts": {
     "build": "browserify src/matrix_lib -o dist/math-script.js",
-    "web": "browserify package.js -o math-script-full.js", 
+    "web": "browserify src/package.js -o dist/math-script-full.js", 
     "test": "jest --collectCoverage",
     "docs": "jsdoc -r src -d ./docs -c jsdoc.json -t node_modules/docdash ",
-    "build-demo": "copy /y src\\demo docs\\demo"
+    "build-demo": "copy /y src\\demo docs\\demo",
+    "coverage": "jest --coverage --coverageReporters=text-lcov | coveralls"
   },
   "author": "Nate Zimmer",
   "license": "MIT",
@@ -17,7 +18,6 @@
     "docdash": "^1.2.0",
     "jest": "^26.4.2",
     "jsdoc": "^3.6.6",
-    "coverage": "jest --coverage --coverageReporters=text-lcov | coveralls"
   },
   "dependencies": {
     "operator-overloading-nz-fork": "^0.5.2"
