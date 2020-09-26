@@ -1,0 +1,267 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    
+    <meta charset="utf-8">
+    <title>create.js - Documentation</title>
+    
+    
+    <script src="scripts/prettify/prettify.js"></script>
+    <script src="scripts/prettify/lang-css.js"></script>
+    <!--[if lt IE 9]>
+      <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+    <link type="text/css" rel="stylesheet" href="styles/prettify.css">
+    <link type="text/css" rel="stylesheet" href="styles/jsdoc.css">
+    <script src="scripts/nav.js" defer></script>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+</head>
+<body>
+
+<input type="checkbox" id="nav-trigger" class="nav-trigger" />
+<label for="nav-trigger" class="navicon-button x">
+  <div class="navicon"></div>
+</label>
+
+<label for="nav-trigger" class="overlay"></label>
+
+<nav >
+    
+    <input type="text" id="nav-search" placeholder="Search" />
+    
+    <h2><a href="index.html">Home</a></h2><h3>Classes</h3><ul><li><a href="matrix_add.html">matrix/add</a><ul class='methods'><li data-type='method'><a href="matrix_add.html#.add">add</a></li><li data-type='method'><a href="matrix_add.html#.subtract">subtract</a></li></ul></li><li><a href="matrix_create.html">matrix/create</a><ul class='methods'><li data-type='method'><a href="matrix_create.html#.clone">clone</a></li><li data-type='method'><a href="matrix_create.html#.ident">ident</a></li><li data-type='method'><a href="matrix_create.html#.ones">ones</a></li><li data-type='method'><a href="matrix_create.html#.range">range</a></li><li data-type='method'><a href="matrix_create.html#.zeros">zeros</a></li></ul></li><li><a href="matrix_exponent.html">matrix/exponent</a><ul class='methods'><li data-type='method'><a href="matrix_exponent.html#.pow">pow</a></li></ul></li><li><a href="matrix_invert.html">matrix/invert</a><ul class='methods'><li data-type='method'><a href="matrix_invert.html#.invert">invert</a></li><li data-type='method'><a href="matrix_invert.html#.pinv">pinv</a></li></ul></li><li><a href="matrix_multiply.html">matrix/multiply</a><ul class='methods'><li data-type='method'><a href="matrix_multiply.html#.multiply">multiply</a></li></ul></li><li><a href="matrix_other.html">matrix/other</a><ul class='methods'><li data-type='method'><a href="matrix_other.html#.checkBounds">checkBounds</a></li><li data-type='method'><a href="matrix_other.html#.diag">diag</a></li><li data-type='method'><a href="matrix_other.html#.flatten">flatten</a></li><li data-type='method'><a href="matrix_other.html#.length">length</a></li><li data-type='method'><a href="matrix_other.html#.max">max</a></li><li data-type='method'><a href="matrix_other.html#.min">min</a></li><li data-type='method'><a href="matrix_other.html#.print">print</a></li><li data-type='method'><a href="matrix_other.html#.round">round</a></li><li data-type='method'><a href="matrix_other.html#.sum">sum</a></li></ul></li><li><a href="matrix_shaping.html">matrix/shaping</a><ul class='methods'><li data-type='method'><a href="matrix_shaping.html#.catH">catH</a></li><li data-type='method'><a href="matrix_shaping.html#.catV">catV</a></li><li data-type='method'><a href="matrix_shaping.html#.size">size</a></li></ul></li></ul>
+</nav>
+
+<div id="main">
+    
+    <h1 class="page-title">create.js</h1>
+    
+
+    
+
+
+
+    
+    <section>
+        <article>
+            <pre class="prettyprint source linenums"><code>/**
+ * @classdesc Matrix creation utilities 
+ * @class matrix/create
+ * @hideconstructor
+ */
+var U = require('./mUtils');
+var matrix = require('../matrix');
+
+
+function range(min,step,max)
+{
+    var M = [[]];
+    var steps = 1; 
+    var maxs = 0; 
+    var increment = 1;
+    
+    if((typeof step)== 'undefined')
+    {
+        steps = min;
+        min = 0;
+    }
+    else if((typeof max) == 'undefined')
+    {
+        maxs = step;
+        steps = Math.floor(maxs - min)+1;
+    }
+    else
+    {
+        increment = step;
+        steps = Math.floor((max - min)/step)+1;
+    }
+    
+    for(var i = 0 ; i &lt; steps; i++)
+    {
+        M[i] = [];
+        M[i][0]= min+increment*i; 
+    }
+    
+    return M; 
+}
+
+
+function matrix_zeros(rows,cols)
+{
+    var M=[];
+
+    if((typeof cols)== 'undefined')
+    {
+        cols = 1; 
+    }
+
+    for(var i = 0; i&lt;rows;i++)
+    {
+        M[i]=[];
+        for(var j=0; j&lt;cols;j++)
+        {
+            M[i].push(0);
+        }
+    }
+    return M;
+}
+
+
+function matrix_ones(rows,cols)
+{
+    var M=[];
+
+    if((typeof cols)== 'undefined')
+    {
+        cols = 1; 
+    }
+
+    for(var i = 0; i&lt;rows;i++)
+    {
+        M[i]=[];
+        for(var j=0; j&lt;cols;j++)
+        {
+            M[i].push(1);
+        }
+    }
+    return M;
+}
+
+
+function matrix_ident(m,n)
+{
+
+    var M = [];
+
+    if((typeof n)== 'undefined')
+    {
+        n = m; 
+    }
+
+    for(var i = 0 ; i &lt;m; i++)
+    {
+        M[i] = [];
+        for(var j = 0; j&lt;n; j++)
+        {
+            var val = (i==j) ? 1 : 0;
+            M[i][j] =val;
+        }
+    }
+    return M;
+}
+
+
+matrix.prototype.clone = function()
+{
+    return matrix.make(U.matrix_copy(this.value));
+}
+
+/**
+ * Creates a copy/clone of a matrix.
+ * @function clone
+ * @param {matrix} A - Matrix
+ * @returns {matrix}
+ * @memberof matrix/create
+ * @example 
+ * var A = new M([[1,2,3,4]]);
+ * var B = A.copy()
+ */ 
+matrix.clone = function(A)
+{
+    return matrix.make(A).clone();
+}
+
+/**
+ * Returns a column vector specified by min, step, max
+ * @function range
+ * @param {int} min - Starting point
+ * @param {int} step - Increment between min and max
+ * @param {int} max - End point of array. 
+ * @returns {matrix}
+ * @memberof matrix/create
+ * @example 
+ * M.range(5).print(); // res: 0.000\n1.000\n2.000\n3.000\n4.000
+ * @example
+ * M.range(0,2,10); // res: '0.000\n2.000\n4.000\n6.000\n8.000\n10.000'
+ */ 
+matrix.range = function(min,step,max)
+{
+    return matrix.make(range(min,step,max));
+}
+
+/**
+ * Returns a matrix filled with 1s specified by `m` and `n`.
+ * @function ones
+ * @param {int} m - columns
+ * @param {int} n - rows
+ * @returns {matrix}
+ * @memberof matrix/create
+ * @example 
+ * M.ones(2,2).print();  
+ * //1.000           1.000
+ * //1.000           1.000
+ */ 
+matrix.ones = function(m,n)
+{
+    return matrix.make(matrix_ones(m,n));
+}
+
+/**
+ * Returns an identity matrix specified by `m` and `n`.
+ * @method ident
+ * @param {int} m - columns
+ * @param {int} n - rows
+ * @returns {matrix}
+ * @memberof matrix/create
+ * @example 
+ * M.ident(2,2).print(); 
+ * //1.000           0.000
+ * //0.000           1.000
+ */ 
+matrix.ident = function(m,n)
+{
+    return matrix.make(matrix_ident(m,n));
+}
+
+/**
+ * Returns a matrix of zeros specified by `m` and `n`.
+ * @function zeros
+ * @param {int} m - columns
+ * @param {int} n - rows
+ * @returns {matrix}
+ * @memberof matrix/create
+ * @example 
+ * M.zeros(2,2).print(); 
+ * //0.000           0.000
+ * //0.000           0.000
+ */ 
+matrix.zeros = function(m,n)
+{
+    return matrix.make(matrix_zeros(m,n));
+}</code></pre>
+        </article>
+    </section>
+
+
+
+
+    
+    
+</div>
+
+<br class="clear">
+
+<footer>
+    Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.6.6</a> on Thu Sep 24 2020 21:40:38 GMT-0500 (Central Daylight Time) using the <a href="https://github.com/clenemt/docdash">docdash</a> theme.
+</footer>
+
+<script>prettyPrint();</script>
+<script src="scripts/polyfill.js"></script>
+<script src="scripts/linenumber.js"></script>
+
+<script src="scripts/search.js" defer></script>
+
+
+
+</body>
+</html>

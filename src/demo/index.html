@@ -1,0 +1,41 @@
+<html>
+
+<head>
+    <link rel="stylesheet" href="codemirror.css">
+    <link rel="stylesheet" href="demo.css">
+</head>
+
+<body>
+    <div class='container'>
+        <div class='demo_bar'>
+            <span>Math-script demo</span>
+            <a>View Source</a>
+            <a>View Github</a>
+        </div>
+        <div id='myPlotData'></div>
+        <forum class='code_block_div'>
+            <textarea class='code_block' id='codeBlock' spellcheck="false">
+var X = M.range(-2.5,0.02,2.5); // Create input
+var Y = 4*X - X**3 + 2; // Main equation 
+Y = Y.addNoise(0.5); 
+Plots.create([X,Y],{type:'scatter',div:'myPlotData'});
+
+var J = M.catH(X**3,X**2,X**1,X**0); // Jacobian 
+var theta = M.pinv(J.t()*J)*J.t()*Y; // Normal equation
+var yH = J*theta; // Estimate
+Plots.add([X,yH],{type:'line',div:'myPlotData'});                                         
+
+</textarea>
+        </forum>
+        
+        <button class='button_a' id='calculating'>Calculate</button>
+    </div>
+</body>
+
+    <script src='../../plotly.min.js'></script>
+    <script src='../../math-script-full.js'></script>
+    <script src='codemirror.js'></script>
+    <script src="javascript.js"></script>
+    <script src='demo_plot.js'></script>
+
+</html>

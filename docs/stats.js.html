@@ -1,0 +1,272 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    
+    <meta charset="utf-8">
+    <title>stats.js - Documentation</title>
+    
+    
+    <script src="scripts/prettify/prettify.js"></script>
+    <script src="scripts/prettify/lang-css.js"></script>
+    <!--[if lt IE 9]>
+      <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+    <link type="text/css" rel="stylesheet" href="styles/prettify.css">
+    <link type="text/css" rel="stylesheet" href="styles/jsdoc.css">
+    <script src="scripts/nav.js" defer></script>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+</head>
+<body>
+
+<input type="checkbox" id="nav-trigger" class="nav-trigger" />
+<label for="nav-trigger" class="navicon-button x">
+  <div class="navicon"></div>
+</label>
+
+<label for="nav-trigger" class="overlay"></label>
+
+<nav >
+    
+    <input type="text" id="nav-search" placeholder="Search" />
+    
+    <h2><a href="index.html">Home</a></h2><h3>Classes</h3><ul><li><a href="matrix_add.html">matrix/add</a><ul class='methods'><li data-type='method'><a href="matrix_add.html#.add">add</a></li><li data-type='method'><a href="matrix_add.html#.subtract">subtract</a></li></ul></li><li><a href="matrix_create.html">matrix/create</a><ul class='methods'><li data-type='method'><a href="matrix_create.html#.clone">clone</a></li><li data-type='method'><a href="matrix_create.html#.ident">ident</a></li><li data-type='method'><a href="matrix_create.html#.ones">ones</a></li><li data-type='method'><a href="matrix_create.html#.range">range</a></li><li data-type='method'><a href="matrix_create.html#.zeros">zeros</a></li></ul></li><li><a href="matrix_exponent.html">matrix/exponent</a><ul class='methods'><li data-type='method'><a href="matrix_exponent.html#.pow">pow</a></li></ul></li><li><a href="matrix_invert.html">matrix/invert</a><ul class='methods'><li data-type='method'><a href="matrix_invert.html#.invert">invert</a></li><li data-type='method'><a href="matrix_invert.html#.pinv">pinv</a></li></ul></li><li><a href="matrix_multiply.html">matrix/multiply</a><ul class='methods'><li data-type='method'><a href="matrix_multiply.html#.multiply">multiply</a></li></ul></li><li><a href="matrix_other.html">matrix/other</a><ul class='methods'><li data-type='method'><a href="matrix_other.html#.checkBounds">checkBounds</a></li><li data-type='method'><a href="matrix_other.html#.diag">diag</a></li><li data-type='method'><a href="matrix_other.html#.flatten">flatten</a></li><li data-type='method'><a href="matrix_other.html#.length">length</a></li><li data-type='method'><a href="matrix_other.html#.max">max</a></li><li data-type='method'><a href="matrix_other.html#.min">min</a></li><li data-type='method'><a href="matrix_other.html#.print">print</a></li><li data-type='method'><a href="matrix_other.html#.round">round</a></li><li data-type='method'><a href="matrix_other.html#.sum">sum</a></li></ul></li><li><a href="matrix_shaping.html">matrix/shaping</a><ul class='methods'><li data-type='method'><a href="matrix_shaping.html#.catH">catH</a></li><li data-type='method'><a href="matrix_shaping.html#.catV">catV</a></li><li data-type='method'><a href="matrix_shaping.html#.size">size</a></li></ul></li></ul>
+</nav>
+
+<div id="main">
+    
+    <h1 class="page-title">stats.js</h1>
+    
+
+    
+
+
+
+    
+    <section>
+        <article>
+            <pre class="prettyprint source linenums"><code>//This is a clobber file of basic primitive funcitons such as a matrix mean, sum, min, max...ect 
+var u = require('./mUtils');
+var matrix = require('../matrix');
+
+//Find mean of matrix: [1,2,3] --> 2
+function matrix_mean(A)
+{
+    var merge = [].concat.apply([],A); // flatten array 
+    var lengthM = merge.length; 
+    var meanM = 0; 
+    for(var i = 0; i &lt;lengthM; i++)
+    {
+        meanM += merge[i];
+    }
+    return (meanM/lengthM);
+}
+
+// Changes from 2D to 1D: [[1,2,3]] --> [1,2,3]
+function matrix_flatten(M)
+{
+    return ([].concat.apply([], M));
+}
+
+//Find max of array: [1,2,3] --> 3
+function getMaxOfArray(numArray) {
+	  return Math.max.apply(null, matrix_flatten(numArray));
+}
+	
+//Find min of array: [1,2,3] --> 1
+function getMinOfArray(numArray) {
+    return Math.min.apply(null, matrix_flatten(numArray));
+}
+
+//Find sum of array: [1,2,3] --> 6
+function getSumOfMatrix(matrixInput)
+{
+    return matrix_flatten(matrixInput).reduce(function(a, b) { return a + b; }, 0);
+}
+
+//Find sum of array: [1,2,3] --> 6
+function getRMSOfMatrix(matrixInput)
+{
+    var M = matrix_flatten(matrixInput); 
+    for(var i = 0; i &lt; M.length; i++)
+    {
+        M[i] = M[i]*M[i];
+    }
+    return Math.sqrt(getSumOfMatrix(M)/M.length); 
+
+}
+
+//Returns the max dimension: 2x50 --> 50
+function matrix_length(M)
+{
+    return matrix.max(matrix.shape(M));
+}
+
+//Rounds matrix: [1,2,3.3] --> [1,2,3]
+function matrix_round(A,d)
+{
+    var d = -1 * d;
+    var M = [];
+    for(var i = 0; i &lt; A.length; i++)
+    {
+        M[i] = [];
+        for(var j = 0; j &lt; A[0].length; j++)
+        {
+            M[i][j] = Math.round10(A[i][j],d);	
+        }
+    }
+    return M;
+}
+
+
+// Add functions to parent class 
+matrix.prototype.mean = function()
+{
+    return matrix_mean(this.value);
+};
+
+matrix.mean = function(x)
+{
+    return matrix_mean(matrix.make(x).value)
+}
+
+matrix.prototype.rms = function()
+{
+    return getRMSOfMatrix(this.value);
+};
+
+matrix.rms = function(x)
+{
+    return getRMSOfMatrix(matrix.make(x).value)
+}
+
+/**
+ * Returns the minimal value of a matrix
+ * @function min
+ * @returns {double}
+ * @memberof matrix/other
+ */
+matrix.prototype.min = function()
+{
+    return getMinOfArray(this.value);
+};
+
+matrix.min = function(x)
+{
+    return getMinOfArray(matrix.make(x).value)
+}
+
+/**
+ * Returns the max value of a matrix
+ * @function max
+ * @returns {double}
+ * @memberof matrix/other
+ */
+matrix.prototype.max = function(x)
+{
+    return getMaxOfArray(this.value);
+};
+
+matrix.max = function(x)
+{
+    return getMaxOfArray(matrix.make(x).value)
+}
+
+/**
+ * Returns the sum of a matrix
+ * @function sum
+ * @returns {double}
+ * @memberof matrix/other
+ */
+matrix.prototype.sum = function()
+{
+    return getSumOfMatrix(this.value);
+};
+
+matrix.sum = function(x)
+{
+    return getMaxOfArray(matrix.make(x).value)
+}
+
+/**
+ * Returns the max dimension of a matrix 
+ * @function length
+ * @returns {int}
+ * @memberof matrix/other
+ */
+matrix.prototype.length = function()
+{
+    return matrix_length(this.value);
+};
+
+// Javascript not allowing over-ride of length? 
+matrix.len = function(x)
+{
+    return matrix_length(matrix.make(x).value);
+};
+
+matrix.prototype.unroll = function()
+{
+    return matrix_flatten(this.value);
+};
+
+matrix.round = function(A,d)
+{
+    return matrix.make(matrix_round(matrix.make(A).value,d));
+}
+
+/**
+ * Returns the matrix rounded to the specified decimal place 
+ * @function round
+ * @param d - decimal precision 
+ * @returns {int}
+ * @memberof matrix/other
+ */
+matrix.prototype.round = function(d)
+{
+    var M = matrix_round(this.value,d);
+    return matrix.make(M);
+};
+
+function matrix_fit(A,B)
+{
+    var M1 = matrix.make(A);
+    var M2 = matrix.make(B);
+
+    var denom = M1.subtract(M1.mean()).rms();
+    var num = M1.subtract(M2).rms();
+    var fitness = 100*(1 - num/denom);
+    return fitness; 
+}
+
+matrix.prototype.fitness = function(A)
+{
+    var fit = matrix_fit(this,Matrixs.make(A));
+    return fit;
+};
+</code></pre>
+        </article>
+    </section>
+
+
+
+
+    
+    
+</div>
+
+<br class="clear">
+
+<footer>
+    Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.6.6</a> on Thu Sep 24 2020 21:40:38 GMT-0500 (Central Daylight Time) using the <a href="https://github.com/clenemt/docdash">docdash</a> theme.
+</footer>
+
+<script>prettyPrint();</script>
+<script src="scripts/polyfill.js"></script>
+<script src="scripts/linenumber.js"></script>
+
+<script src="scripts/search.js" defer></script>
+
+
+
+</body>
+</html>

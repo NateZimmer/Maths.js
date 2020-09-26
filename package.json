@@ -4,12 +4,20 @@
   "description": "This is a test of my first npm based website",
   "main": "index.js",
   "scripts": {
-    "build": "browserify package.js -o Maths.js",
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "build": "browserify src/matrix_lib -o dist/math-script.js",
+    "web": "browserify package.js -o math-script-full.js", 
+    "test": "jest --collectCoverage",
+    "docs": "jsdoc -r src -d ./docs -c jsdoc.json -t node_modules/docdash "
   },
   "author": "",
   "license": "MIT",
   "devDependencies": {
-    "browserify": "^13.1.1"
+    "browserify": "^13.3.0",
+    "docdash": "^1.2.0",
+    "jest": "^26.4.2",
+    "jsdoc": "^3.6.6"
+  },
+  "dependencies": {
+    "operator-overloading-nz-fork": "^0.5.2"
   }
 }

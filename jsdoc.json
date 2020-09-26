@@ -1,0 +1,9 @@
+{
+    "docdash": {
+        "static": true,
+        "search": true,
+        "plugins": [
+            "plugins/markdown"
+        ]
+    }
+}

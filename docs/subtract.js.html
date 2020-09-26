@@ -1,0 +1,141 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    
+    <meta charset="utf-8">
+    <title>subtract.js - Documentation</title>
+    
+    
+    <script src="scripts/prettify/prettify.js"></script>
+    <script src="scripts/prettify/lang-css.js"></script>
+    <!--[if lt IE 9]>
+      <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+    <link type="text/css" rel="stylesheet" href="styles/prettify.css">
+    <link type="text/css" rel="stylesheet" href="styles/jsdoc.css">
+    <script src="scripts/nav.js" defer></script>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+</head>
+<body>
+
+<input type="checkbox" id="nav-trigger" class="nav-trigger" />
+<label for="nav-trigger" class="navicon-button x">
+  <div class="navicon"></div>
+</label>
+
+<label for="nav-trigger" class="overlay"></label>
+
+<nav >
+    
+    <input type="text" id="nav-search" placeholder="Search" />
+    
+    <h2><a href="index.html">Home</a></h2><h3>Classes</h3><ul><li><a href="matrix_add.html">matrix/add</a><ul class='methods'><li data-type='method'><a href="matrix_add.html#.add">add</a></li><li data-type='method'><a href="matrix_add.html#.subtract">subtract</a></li></ul></li><li><a href="matrix_create.html">matrix/create</a><ul class='methods'><li data-type='method'><a href="matrix_create.html#.clone">clone</a></li><li data-type='method'><a href="matrix_create.html#.ident">ident</a></li><li data-type='method'><a href="matrix_create.html#.ones">ones</a></li><li data-type='method'><a href="matrix_create.html#.range">range</a></li><li data-type='method'><a href="matrix_create.html#.zeros">zeros</a></li></ul></li><li><a href="matrix_exponent.html">matrix/exponent</a><ul class='methods'><li data-type='method'><a href="matrix_exponent.html#.pow">pow</a></li></ul></li><li><a href="matrix_invert.html">matrix/invert</a><ul class='methods'><li data-type='method'><a href="matrix_invert.html#.invert">invert</a></li><li data-type='method'><a href="matrix_invert.html#.pinv">pinv</a></li></ul></li><li><a href="matrix_multiply.html">matrix/multiply</a><ul class='methods'><li data-type='method'><a href="matrix_multiply.html#.multiply">multiply</a></li></ul></li><li><a href="matrix_other.html">matrix/other</a><ul class='methods'><li data-type='method'><a href="matrix_other.html#.checkBounds">checkBounds</a></li><li data-type='method'><a href="matrix_other.html#.diag">diag</a></li><li data-type='method'><a href="matrix_other.html#.flatten">flatten</a></li><li data-type='method'><a href="matrix_other.html#.length">length</a></li><li data-type='method'><a href="matrix_other.html#.max">max</a></li><li data-type='method'><a href="matrix_other.html#.min">min</a></li><li data-type='method'><a href="matrix_other.html#.print">print</a></li><li data-type='method'><a href="matrix_other.html#.round">round</a></li><li data-type='method'><a href="matrix_other.html#.sum">sum</a></li></ul></li><li><a href="matrix_shaping.html">matrix/shaping</a><ul class='methods'><li data-type='method'><a href="matrix_shaping.html#.catH">catH</a></li><li data-type='method'><a href="matrix_shaping.html#.catV">catV</a></li><li data-type='method'><a href="matrix_shaping.html#.size">size</a></li></ul></li></ul>
+</nav>
+
+<div id="main">
+    
+    <h1 class="page-title">subtract.js</h1>
+    
+
+    
+
+
+
+    
+    <section>
+        <article>
+            <pre class="prettyprint source linenums"><code>var U = require('./mUtils');
+var matrix = require('../matrix');
+var addM = require('./add');
+
+
+//Subtracts scalar or matrix from a matrix 
+function matrix_subtract(A,B)
+{
+    var M = [];
+    var returnVal = 'Dimension Error';
+
+    if(U.isScalar(B))
+    {
+        B = U.getScalar(B);
+        returnVal = addM.matrix_add_scalar(A,-B);
+    }else if(U.isScalar(A)){
+        A = U.getScalar(A);
+        returnVal = addM.matrix_add_scalar(B,-A);  
+    }
+    else if(U.is2D(A) &amp;&amp; U.is2D(B) &amp;&amp; U.matrix_compare_size(A,B)) 
+    {
+        for(var i =0; i&lt;A.length; i++)
+        {
+            M[i] = [];
+            for(var j = 0; j&lt;A[0].length;j++)
+            {
+                M[i][j] = A[i][j]-B[i][j];
+            }
+            returnVal = M;  
+        }
+    }
+    else
+    {
+        throw 'Demension Error!';
+    }
+    return returnVal; 
+}
+
+
+/**
+ * Subtract a scalar/array/matrix to self
+ * @function subtract
+ * @param {scalar/array/matrix} x - Adds a scalar/array/matrix to self
+ * @returns {matrix}
+ * @memberof matrix/add
+ */
+matrix.prototype.subtract = function(x)
+{
+    var M = matrix_subtract(this.value,matrix.make(x).value);
+    return (new matrix(M));
+};
+
+//Add prototype to parent class 
+matrix.subtract = function(A,B)
+{
+    return new matrix(matrix_subtract(matrix.make(A).value,matrix.make(B).value));
+}
+
+// Overload support
+matrix.prototype.__minus = function(x)
+{
+    var M = matrix_subtract(this.value,matrix.make(x).value);
+    return matrix.make(M);
+};
+
+// Scalar overload support  
+matrix.numberOverrides.__minus = function(x){
+	return matrix.make(x).subtract(this);
+}</code></pre>
+        </article>
+    </section>
+
+
+
+
+    
+    
+</div>
+
+<br class="clear">
+
+<footer>
+    Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.6.6</a> on Thu Sep 24 2020 21:40:38 GMT-0500 (Central Daylight Time) using the <a href="https://github.com/clenemt/docdash">docdash</a> theme.
+</footer>
+
+<script>prettyPrint();</script>
+<script src="scripts/polyfill.js"></script>
+<script src="scripts/linenumber.js"></script>
+
+<script src="scripts/search.js" defer></script>
+
+
+
+</body>
+</html>
