@@ -9,7 +9,7 @@
     "test": "jest --collectCoverage",
     "docs": "jsdoc -r src -d ./docs -c jsdoc.json -t node_modules/docdash ",
     "build-demo": "copy /y demo docs\\demo",
-    "coverage": "jest --coverage && cat ./coverage/lcov.info | coveralls"
+    "coverage": "jest --coverage --coverageReporters=text-lcov | coveralls"
   },
   "author": "Nate Zimmer",
   "license": "MIT",
