@@ -1,0 +1,11 @@
+language: node_js
+
+node_js:
+  - 10
+
+jobs:
+  include:
+    - stage: test
+      script: "npm run test"
+    - stage: coverage
+      script: "npm run coverage"

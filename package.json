@@ -7,7 +7,8 @@
     "build": "browserify src/matrix_lib -o dist/math-script.js",
     "web": "browserify package.js -o math-script-full.js", 
     "test": "jest --collectCoverage",
-    "docs": "jsdoc -r src -d ./docs -c jsdoc.json -t node_modules/docdash "
+    "docs": "jsdoc -r src -d ./docs -c jsdoc.json -t node_modules/docdash ",
+    "build-demo": "copy /y src\\demo docs\\demo"
   },
   "author": "",
   "license": "MIT",
@@ -15,7 +16,8 @@
     "browserify": "^13.3.0",
     "docdash": "^1.2.0",
     "jest": "^26.4.2",
-    "jsdoc": "^3.6.6"
+    "jsdoc": "^3.6.6",
+    "coverage": "jest --coverage --coverageReporters=text-lcov | coveralls"
   },
   "dependencies": {
     "operator-overloading-nz-fork": "^0.5.2"

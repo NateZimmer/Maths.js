@@ -2,24 +2,48 @@
 <img src ="https://raw.githubusercontent.com/NateZimmer/Maths.js/master/Images/BannerImage.png">
 </p>
 <p align="center"><strong> 
-Navigation: <a href='README.md'>Home</a> | <a href='Matrixs.md'>Matrixs</a> | <a href='Plots.md'>Plots</a>
+Navigation: <a href='https://natezimmer.github.io/maths.js.io'>Docs/Reference</a> | <a href='https://natezimmer.github.io/maths.js.io/demo/index.html'>Demo Playground</a> | <a href='https://github.com/NateZimmer/Maths.js'>Github Source</a> 
 </strong>
 </p>
 
-## Maths.js
-A math library for javascript with an emphasis on matrix opperations, non linear solvers, and visualization. This library is designed to bring advance mathematical computation to client side javascript and eliminate the need for python/octave/blas calls.  
+## Math-Script
+A math library for JS with an emphasis on matrix operations, non linear solvers, visualizations, and **overload support**!.
+```js
+var M = require('math-script');
 
-## Library Usage
-Currently Maths.js is intended to be used in browsers so include it in the traditional manner. 
+M.execute(function(M){
+    var X = M.range(0,0.1,10); // Create an input matrix, [100,1] matrix 
+    // Your typical ugly JS math library 
+    var Y = X.pow(3).multiply(-1.3).add(X.pow(2).multiply(13)).add(X.multiply(-5)).add(30);
+    // What math-script supports
+    Y = -1.3*X**3 + 13*X**2 + -5*X + 30; // not normally possible in JS
+    console.log(Y.print());
+});
+```
+
+**Core features:**
+
+- Matrix operations operator support in execute environment `*, +, **, -`
+- Feature rich [M,N] matrix operation support, see [reference](https://natezimmer.github.io/maths.js.io) 
+- SVD support / Nonlinear solvers  
+
+## Install
+
+**NPM Installation:**
+
+```
+npm install math-script 
+```
+**Browser minimal:**
 ```html
 <script type="text/javascript" src="Maths.js"></script>
 ```
-**Maths.js with Plotting**
+**Math-Script with Plotting**
 ```html
 <script type="text/javascript" src="plotly.min.js"></script>
 <script type="text/javascript" src="Maths.js"></script>
 ```
-Maths.js can be used with [plotly](https://github.com/plotly/plotly.js) for visualization of data. 
+
 
 ## Library Application Sample 
 
