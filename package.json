@@ -1,8 +1,8 @@
 {
-  "name": "mysite",
+  "name": "math-script",
   "version": "1.0.1",
   "description": "This is a test of my first npm based website",
-  "main": "index.js",
+  "main": "src/matrix_lib.js",
   "scripts": {
     "build": "browserify src/matrix_lib -o dist/math-script.js",
     "web": "browserify package.js -o math-script-full.js", 
@@ -10,7 +10,7 @@
     "docs": "jsdoc -r src -d ./docs -c jsdoc.json -t node_modules/docdash ",
     "build-demo": "copy /y src\\demo docs\\demo"
   },
-  "author": "",
+  "author": "Nate Zimmer",
   "license": "MIT",
   "devDependencies": {
     "browserify": "^13.3.0",
